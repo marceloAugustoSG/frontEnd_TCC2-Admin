@@ -1,0 +1,31 @@
+{
+  "name": "agenda",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@mdi/font": "7.2.96",
+    "@ohmygodvt95/vue3-pikaday": "^1.0.0",
+    "@vuepic/vue-datepicker": "^6.0.1",
+    "axios": "^1.4.0",
+    "date-fns": "^2.30.0",
+    "roboto-fontface": "*",
+    "vue": "^3.2.36",
+    "vue-calendar-3": "^2.2.6",
+    "vue-datepicker": "^1.3.0",
+    "vue-inline-calendar": "^1.0.0",
+    "vue-router": "4.2.4",
+    "vuetify": "3.3.13",
+    "vuex": "^4.1.0",
+    "webfontloader": "^1.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "4.3.1",
+    "vite": "4.4.9",
+    "vite-plugin-vuetify": "^1.0.0"
+  }
+}
