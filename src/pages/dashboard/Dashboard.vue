@@ -67,8 +67,8 @@ const notificacoes = [
   { title: "notificacao 3" },
   { title: "notificacao 4" },
 ];
-onMounted(async () => {
-  await store.dispatch('listarConsultas')
+onMounted(() => {
+  store.dispatch('listarConsultas')
 })
 function toggleTheme() {
   theme.global.name.value = theme.global.current.value.dark

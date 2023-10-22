@@ -1,14 +1,14 @@
 <template>
   <v-data-iterator v-model:items-per-page="itemsPerPage" v-model:page="page" :items="consultas" :search="search"
     :sort-by="sortBy">
-
     <template v-slot:header>
       <v-toolbar dark color="blue-darken-3" class="px-2 mb-2">
         <v-text-field v-model="search" clearable hide-details prepend-inner-icon="mdi-magnify" placeholder="Procurar"
           variant="solo" density="comfortable"></v-text-field>
         <v-spacer></v-spacer>
-        <v-select v-model="sortKey" hide-details :items="keys" :item-value="item => item.toLowerCase()"
-          prepend-inner-icon="mdi-sort" label="Ordenar por" density="comfortable" />
+
+        <v-select v-model="sortKey" hide-details :items="ops" item-title="nome" item-value="valor"
+          prepend-inner-icon="mdi-sort" label="ordenar por " density="comfortable"></v-select>
         <v-spacer></v-spacer>
         <v-btn-toggle v-model="sortOrder" mandatory>
           <v-btn color="blue" value="asc">
@@ -20,25 +20,33 @@
         </v-btn-toggle>
       </v-toolbar>
     </template>
+
     <template v-slot:no-data>
-      <v-alert class="ma-2" type="warning">Nenhum resultado encontrado</v-alert>
+      <v-alert class="ma-2" type="warning">Nenhum resultado</v-alert>
     </template>
 
     <template v-slot:default="props">
-      <v-row class="pa-5">
-        <v-col v-for="  item   in   props.items  " :key="item.id" cols="12" sm="6" md="4" lg="3">
-          <v-card elevation="10">
-            <v-toolbar>
-              <span class="ma-5"> {{ item.raw.servico }}</span>
-              <v-spacer />
+      <v-row class="ma-2">
+        <v-col v-for="item in    props.items   " :key="item.name" cols="12" sm="6" md="4" lg="4">
+          <v-card>
+
+            <v-toolbar :title="item.raw.servico">
               <editar-consulta :dialog="showEDitarConsulta" :consulta="item.raw" />
             </v-toolbar>
-            <v-divider></v-divider>
+
+            <v-divider />
+
             <v-list density="compact">
-              <v-list-item v-for="(  key, index  ) in   filteredKeys  " :key="index"
-                :title="key === 'data_solicitacao' ? 'Solicitada em :' : key === 'Observacao' ? 'Observação' : key"
-                :subtitle="key === 'data_solicitacao' ? new Date(item.raw.data_solicitacao).toLocaleDateString() : key === 'Data' ? (item.raw.data ? new Date(item.raw.data).toLocaleDateString() : 'Data não definida') : String(item.raw[key.toLowerCase()])"
-                :class="{ 'text-blue': sortKey === key.toLowerCase() }" />
+              <v-list-item v-for="(key, index) in    filteredKeys   " :key="index"
+                :title="key === 'observacao' ? 'Observação' : key === 'servico' ? 'Serviço' : key === 'data_solicitacao' ? 'Solicitada em:' : pMaiuscula(key)"
+                :subtitle="item.raw[key.toLowerCase()] !== null ? String(item.raw[key.toLowerCase()]) : 'Data indefinida'"
+                :class="{
+                  'text-blue': sortKey === key.toLowerCase(),
+                  'text-orange': item.raw[key.toLowerCase()] === 'Agendada',
+                  'text-green': item.raw[key.toLowerCase()] === 'Confirmada'
+                }">
+              </v-list-item>
+
             </v-list>
           </v-card>
         </v-col>
@@ -55,11 +63,13 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item v-for="(  number, index  ) in   itemsPerPageArray  " :key="index" :title="number"
+            <v-list-item v-for="(   number, index   ) in    itemsPerPageArray   " :key="index" :title="number"
               @click="itemsPerPage = number"></v-list-item>
           </v-list>
         </v-menu>
+
         <v-spacer></v-spacer>
+
         <span class="mr-4
           grey--text">
           Página {{ page }} de {{ numberOfPages }}
@@ -73,158 +83,109 @@
       </div>
     </template>
   </v-data-iterator>
+  <p>{{ ops }}</p>
 </template>
+
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeMount } from 'vue';
 import { useStore } from 'vuex';
 import EditarConsulta from '@/components/EditarConsulta.vue';
-
-// Suas variáveis reativas
-const itemsPerPageArray = [4, 8, 12];
-const itemsPerPage = ref(4);
-const page = ref(1);
-const search = ref('');
-const sortKey = ref('Status');
-const sortOrder = ref('asc');
-const keys = [
-  'Status',
-  'Data',
-  'Observacao',
-  'data_solicitacao'];
-
-
-
 const store = useStore()
 const showEDitarConsulta = ref(true)
+const itemsPerPageArray = ref([3, 6, 9]);
+const itemsPerPage = ref(3);
+const page = ref(1);
+const search = ref('');
+const sortKey = ref('status');
+const sortOrder = ref('asc');
+const keys = ref([
+  'status',
+  'data',
+  'observacao',
+  'servico',
+  'data_solicitacao'
 
+]);
 
-onMounted(async () => {
+function pMaiuscula(titulo) {
+  return titulo[0].toUpperCase() + titulo.substring(1);
 
-  await store.dispatch('listarConsultas')
-})
-const consultas = computed(() => store.state.consultas)
+}
 
-const infoConsulta = ref({
-  status: String,
-  nome: String,
-  tipo: String,
-  local: String,
-  profissional: String,
-})
+const ops = ref([
+  { nome: 'Status', valor: 'status' },
+  { nome: 'Data', valor: 'data' },
+  { nome: 'Observação', valor: 'observacao' },
+  { nome: 'Solicitação', valor: 'data_solicitacao' }
 
+])
 
-const desserts = [
+const desserts = ref([
   {
-    "id": 3,
-    "data": null,
-    "status": "Agendada",
-    "observacao": "Nenhuma observação",
-    "servico": "Atendimento Médico",
-    "profissionalId": null,
-    "data_solicitacao": "2022-10-16T16:55:33.617Z"
+    name: 'Frozen Yogurt',
+    calories: 159,
+    fat: 6.0,
+    carbs: 24,
+    protein: 4.0,
+    sodium: 87,
+    calcium: '14%',
+    iron: '1%',
   },
   {
-    "id": 4,
-    "data": null,
-    "status": "confirmado",
-    "observacao": "extracao do siso",
-    "servico": "Atendimento Médico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
+    name: 'Frozen Yogurt',
+    calories: 159,
+    fat: 6.0,
+    carbs: 24,
+    protein: 4.0,
+    sodium: 87,
+    calcium: '14%',
+    iron: '1%',
   },
   {
-    "id": 5,
-    "data": null,
-    "status": "Agendada",
-    "observacao": "extracao do siso",
-    "servico": "Atendimento Psicológico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
+    name: 'Frozen Yogurt',
+    calories: 159,
+    fat: 6.0,
+    carbs: 24,
+    protein: 4.0,
+    sodium: 87,
+    calcium: '14%',
+    iron: '1%',
   },
   {
-    "id": 6,
-    "data": null,
-    "status": "Agendada",
-    "observacao": "Nenhuma Observação",
-    "servico": "Atendimento Psicológico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
+    name: 'Frozen Yogurt',
+    calories: 160,
+    fat: 6.0,
+    carbs: 24,
+    protein: 4.0,
+    sodium: 87,
+    calcium: '14%',
+    iron: '1%',
   },
-  {
-    "id": 7,
-    "data": null,
-    "status": "Agendada",
-    "observacao": "Nenhuma Observação",
-    "servico": "Atendimento Psicológico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
-  },
-  {
-    "id": 8,
-    "data": null,
-    "status": "Agendada",
-    "observacao": "Nenhuma Observação",
-    "servico": "Atendimento Psicológico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
-  },
-  {
-    "id": 9,
-    "data": null,
-    "status": "Agendada",
-    "observacao": "Nenhuma Observação",
-    "servico": "Atendimento Psicológico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
-  },
-  {
-    "id": 10,
-    "data": null,
-    "status": "Agendada",
-    "observacao": "Nenhuma Observação",
-    "servico": "Atendimento Psicológico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
-  },
-  {
-    "id": 11,
-    "data": null,
-    "status": "Agendada",
-    "observacao": "Nenhuma Observação",
-    "servico": "Atendimento Psicológico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
-  },
-  {
-    "id": 12,
-    "data": null,
-    "status": "Cancelada",
-    "observacao": "Nenhuma Observação",
-    "servico": "Atendimento Psicológico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
-  },
-  {
-    "id": 13,
-    "data": null,
-    "status": "Cancelada",
-    "observacao": "Nenhuma Observação",
-    "servico": "Atendimento Psicológico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
-  },
-  {
-    "id": 14,
-    "data": null,
-    "status": "Cancelada",
-    "observacao": "Nenhuma Observação",
-    "servico": "Atendimento Psicológico",
-    "profissionalId": null,
-    "data_solicitacao": "2023-10-16T16:55:33.617Z"
+
+  // ... Add your dessert data here
+]);
+
+const consultas = ref([]);
+
+// Carregar dados antes do componente ser renderizado
+onBeforeMount(async () => {
+  try {
+    await store.dispatch('listarConsultas');
+    consultas.value = store.getters.consultas;
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
   }
-];
+});
 
-// Funções de paginação
+const numberOfPages = computed(() => Math.ceil(desserts.value.length / itemsPerPage.value));
+const filteredKeys = computed(() => keys.value.filter(key => key !== 'Name'));
+const sortBy = computed(() => [
+  {
+    key: sortKey.value,
+    order: sortOrder.value,
+  },
+]);
+
 const nextPage = () => {
   if (page.value + 1 <= numberOfPages.value) page.value += 1;
 };
@@ -232,33 +193,4 @@ const nextPage = () => {
 const prevPage = () => {
   if (page.value - 1 >= 1) page.value -= 1;
 };
-
-function mostrarConsulta(consulta) {
-  infoConsulta.value.status = consulta.status
-  infoConsulta.value.local = "Castelinho"
-  if (consulta.Paciente.nome) {
-    infoConsulta.value.nome = consulta.Paciente.nome
-    showEDitarConsulta.value = false
-  } else { infoConsulta.value.nome = 'teste' }
-  alert(infoConsulta.value.status)
-
-
-
-}
-
-// Propriedades calculadas
-const numberOfPages = computed(() => {
-  return Math.ceil(consultas.value.length / itemsPerPage.value);
-});
-
-
-const filteredKeys = computed(() => keys.filter(key => key !== 'Name'));
-
-const sortBy = computed(() => [{
-  key: sortKey.value,
-  order: sortOrder.value,
-}]);
-
-
-
 </script>
