@@ -15,7 +15,7 @@ const routes =
     },
     {
       path: "/criarConta",
-      component: () => import("@/pages/CreateAccountPage.vue"),
+      component: () => import("@/pages/CriarConta.vue"),
     },
     {
       path: "/logout",

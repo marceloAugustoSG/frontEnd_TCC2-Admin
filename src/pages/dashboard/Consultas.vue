@@ -2,7 +2,7 @@
   <v-data-iterator v-model:items-per-page="itemsPerPage" v-model:page="page" :items="consultas" :search="search"
     :sort-by="sortBy">
     <template v-slot:header>
-      <v-toolbar dark color="blue-darken-3" class="px-2 mb-2">
+      <v-toolbar dark color="primary" class="px-2 mb-2">
         <v-text-field v-model="search" clearable hide-details prepend-inner-icon="mdi-magnify" placeholder="Procurar"
           variant="solo" density="comfortable"></v-text-field>
         <v-spacer></v-spacer>
@@ -27,26 +27,29 @@
 
     <template v-slot:default="props">
       <v-row class="ma-2">
-        <v-col v-for="item in    props.items   " :key="item.name" cols="12" sm="6" md="4" lg="4">
-          <v-card>
-
-            <v-toolbar :title="item.raw.servico">
-              <editar-consulta :dialog="showEDitarConsulta" :consulta="item.raw" />
+        <v-col v-for="item in        props.items       " :key="item.servico" cols="12" sm="6" md="4" lg="4">
+          <v-card elevation="10">
+            <v-toolbar :title="item.raw.servico" color="primary">
+              <div style="display: flex;" class="mr-1">
+                <editar-consulta :consulta="item.raw" />
+              </div>
             </v-toolbar>
-
             <v-divider />
-
             <v-list density="compact">
-              <v-list-item v-for="(key, index) in    filteredKeys   " :key="index"
-                :title="key === 'observacao' ? 'Observação' : key === 'servico' ? 'Serviço' : key === 'data_solicitacao' ? 'Solicitada em:' : pMaiuscula(key)"
-                :subtitle="item.raw[key.toLowerCase()] !== null ? String(item.raw[key.toLowerCase()]) : 'Data indefinida'"
-                :class="{
-                  'text-blue': sortKey === key.toLowerCase(),
-                  'text-orange': item.raw[key.toLowerCase()] === 'Agendada',
-                  'text-green': item.raw[key.toLowerCase()] === 'Confirmada'
-                }">
+              <v-list-item v-for="(key, index) in        filteredKeys       " :key="index"
+                :title="key === 'observacao' ? 'Observação' : key === 'servico' ? 'Serviço' : key === 'data_solicitacao' ? 'Solicitada em:' : key === 'Paciente.nome' ? 'Paciente' : pMaiuscula(key)"
+                :subtitle="key === 'Paciente.nome' ? item.raw.Paciente.nome
+                  : key === 'data' && item.raw[key.toLowerCase()] !== null ? formatDate(item.raw.data)
+                    : key === 'data_solicitacao' ? formatDate(item.raw.data_solicitacao)
+                      : key === 'status' ? item.raw.status : 'Data ainda não definida'
+                  " :class="{
+    'text-blue': sortKey === key.toLowerCase(),
+    'text-orange': item.raw[key.toLowerCase()] === 'Agendada',
+    'text-green': item.raw[key.toLowerCase()] === 'Confirmada',
+    'text-red': item.raw[key.toLowerCase()] === 'Cancelada'
+  }
+    ">
               </v-list-item>
-
             </v-list>
           </v-card>
         </v-col>
@@ -63,13 +66,11 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item v-for="(   number, index   ) in    itemsPerPageArray   " :key="index" :title="number"
-              @click="itemsPerPage = number"></v-list-item>
+            <v-list-item v-for="(          number, index          ) in           itemsPerPageArray          " :key="index"
+              :title="number" @click="itemsPerPage = number"></v-list-item>
           </v-list>
         </v-menu>
-
         <v-spacer></v-spacer>
-
         <span class="mr-4
           grey--text">
           Página {{ page }} de {{ numberOfPages }}
@@ -83,91 +84,44 @@
       </div>
     </template>
   </v-data-iterator>
-  <p>{{ ops }}</p>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeMount } from 'vue';
+import formatDate from '@/services/date'
+import { ref, computed, onBeforeMount } from 'vue';
 import { useStore } from 'vuex';
 import EditarConsulta from '@/components/EditarConsulta.vue';
 const store = useStore()
-const showEDitarConsulta = ref(true)
-const itemsPerPageArray = ref([3, 6, 9]);
+const itemsPerPageArray = ref([4, 6, 9, 12, 100]);
 const itemsPerPage = ref(3);
 const page = ref(1);
 const search = ref('');
 const sortKey = ref('status');
 const sortOrder = ref('asc');
 const keys = ref([
-  'status',
+  'Paciente.nome',
   'data',
-  'observacao',
-  'servico',
-  'data_solicitacao'
-
+  'data_solicitacao',
+  'status'
 ]);
 
 function pMaiuscula(titulo) {
   return titulo[0].toUpperCase() + titulo.substring(1);
-
 }
 
+
+
 const ops = ref([
+  { nome: 'Paciente', valor: 'Paciente.nome' },
   { nome: 'Status', valor: 'status' },
-  { nome: 'Data', valor: 'data' },
-  { nome: 'Observação', valor: 'observacao' },
-  { nome: 'Solicitação', valor: 'data_solicitacao' }
+  { nome: 'Data da consulta', valor: 'data' },
+  { nome: 'Data de Solicitação', valor: 'data_solicitacao' },
 
 ])
 
-const desserts = ref([
-  {
-    name: 'Frozen Yogurt',
-    calories: 159,
-    fat: 6.0,
-    carbs: 24,
-    protein: 4.0,
-    sodium: 87,
-    calcium: '14%',
-    iron: '1%',
-  },
-  {
-    name: 'Frozen Yogurt',
-    calories: 159,
-    fat: 6.0,
-    carbs: 24,
-    protein: 4.0,
-    sodium: 87,
-    calcium: '14%',
-    iron: '1%',
-  },
-  {
-    name: 'Frozen Yogurt',
-    calories: 159,
-    fat: 6.0,
-    carbs: 24,
-    protein: 4.0,
-    sodium: 87,
-    calcium: '14%',
-    iron: '1%',
-  },
-  {
-    name: 'Frozen Yogurt',
-    calories: 160,
-    fat: 6.0,
-    carbs: 24,
-    protein: 4.0,
-    sodium: 87,
-    calcium: '14%',
-    iron: '1%',
-  },
-
-  // ... Add your dessert data here
-]);
-
 const consultas = ref([]);
 
-// Carregar dados antes do componente ser renderizado
+
 onBeforeMount(async () => {
   try {
     await store.dispatch('listarConsultas');
@@ -177,14 +131,18 @@ onBeforeMount(async () => {
   }
 });
 
-const numberOfPages = computed(() => Math.ceil(desserts.value.length / itemsPerPage.value));
-const filteredKeys = computed(() => keys.value.filter(key => key !== 'Name'));
-const sortBy = computed(() => [
-  {
-    key: sortKey.value,
-    order: sortOrder.value,
-  },
-]);
+const numberOfPages = computed(() => Math.ceil(consultas.value.length / itemsPerPage.value));
+
+const filteredKeys = computed(() => keys.value);
+
+const sortBy = computed(() => {
+  return [
+    {
+      key: sortKey.value,
+      order: sortOrder.value,
+    },
+  ];
+});
 
 const nextPage = () => {
   if (page.value + 1 <= numberOfPages.value) page.value += 1;
@@ -193,4 +151,6 @@ const nextPage = () => {
 const prevPage = () => {
   if (page.value - 1 >= 1) page.value -= 1;
 };
+
+
 </script>

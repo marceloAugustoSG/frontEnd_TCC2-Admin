@@ -4,8 +4,7 @@
   </v-app>
 </template>
 
-<script>
-export default {
-};
+<script setup>
+
 </script>
 <style></style>

@@ -5,13 +5,13 @@
             <v-col cols="12" lg="6" md="8" sm="8" xl="4">
                 <v-card>
                     <v-card-text>
-                        <h2 class="text-center">Crie sua conta</h2>
+                        <h2 class="text-center">alo sua conta</h2>
                     </v-card-text>
                     <v-card>
                         <v-card-item>
                             <form @submit.prevent="submit">
 
-                                <v-text-field prepend-inner-icon="mdi-account" v-model="usuario.Paciente.nome" label="Nome"
+                                <v-text-field prepend-inner-icon="mdi-account" v-model="usuario.paciente.nome" label="Nome"
                                     required />
                                 <v-text-field prepend-inner-icon="mdi-email" v-model="usuario.email" :rules="emailRules"
                                     label="E-mail" required />
@@ -30,10 +30,10 @@
                                     required />
 
 
-                                <v-text-field type="number" v-model="usuario.Paciente.matricula" label="Nº Matricula"
+                                <v-text-field type="number" v-model="usuario.paciente.matricula" label="Nº Matricula"
                                     :rules="matriculaRules" />
 
-                                <v-select label="Tipo" v-model="usuario.Paciente.tipo" :items="selectTipos"></v-select>
+                                <v-select label="Tipo" v-model="usuario.paciente.tipo" :items="selectTipos" />
 
                                 <v-row class="pb-5">
                                     <v-col>
@@ -98,10 +98,12 @@ let isUserExist = ref(false)
 let usuario = reactive({
     email: '',
     password: '',
-    Paciente: {
+    regra: 'paciente',
+    paciente: {
         nome: '',
         tipo: '',
-        matricula: ''
+        matricula: '',
+        dataNascimento: ''
     },
 })
 let confirmPassword = ref('')
@@ -163,12 +165,12 @@ function backtoLogin() {
     router.push({ name: 'login' })
 }
 function clearInputs() {
-    usuario.Paciente.nome = ''
+    usuario.paciente.nome = ''
     usuario.email = ''
     usuario.password = ''
     confirmPassword.value = ''
-    usuario.Paciente.matricula = ''
-    usuario.Paciente.tipo = ''
+    usuario.paciente.matricula = ''
+    usuario.paciente.tipo = ''
 }
 
 function checkPassoWord() {

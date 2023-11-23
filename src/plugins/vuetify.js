@@ -11,8 +11,6 @@ import enUS from 'date-fns/locale/en-US'
 
 import { VDatePicker } from 'vuetify/labs/VDatePicker'
 
-// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
-
 const ligth = {
   dark: false,
   colors: {
@@ -55,7 +53,6 @@ export default createVuetify({
     adapter: VuetifyDateAdapter,
     locale: {
       en: enUS,
-      // sheets component melhor que o alert
     }
   }, components: {
     VDataIterator,

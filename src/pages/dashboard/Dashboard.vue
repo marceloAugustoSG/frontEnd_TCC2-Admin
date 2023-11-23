@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <v-layout>
-      <v-app-bar style="position: fixed;">
+      <v-app-bar style="position: fixed;" color="primary">
         <v-app-bar-nav-icon style="margin: 0 10px ; " variant="text" @click.stop="isOpenSBar = !isOpenSBar" />
-        <v-app-bar-title>Painel Administrativo</v-app-bar-title>
+        <v-app-bar-title text="Painel Administrativo" />
 
         <template #append>
           <v-btn class="mr-3" @click="toggleTheme">
@@ -37,9 +37,9 @@
           </v-menu>
         </template>
       </v-app-bar>
-      <v-navigation-drawer style="position: fixed;" v-model="isOpenSBar">
+      <v-navigation-drawer style="position: fixed;" v-model="isOpenSBar" color="primary">
         <v-list>
-          <v-list-item to="/inicio" prepend-icon="mdi-home" title="Início" />
+          <v-list-item  to="/inicio" prepend-icon="mdi-home" title="Início" />
           <v-list-item to="/consultas" prepend-icon="mdi-list-box-outline" title="Consultas" />
           <v-list-item to="/relatorios" prepend-icon="mdi-file-document-multiple" title="Relatórios" />
         </v-list>
