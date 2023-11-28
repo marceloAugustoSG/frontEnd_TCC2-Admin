@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 const router = useRouter()
 const store = useStore()
+
 function logout() {
     store.dispatch('logout')
     router.push({ name: 'login' })

@@ -3,7 +3,7 @@
     <v-layout>
       <v-app-bar style="position: fixed;" color="primary">
         <v-app-bar-nav-icon style="margin: 0 10px ; " variant="text" @click.stop="isOpenSBar = !isOpenSBar" />
-        <v-app-bar-title text="Painel Administrativo" />
+        <v-app-bar-title text="Psicólogo" />
 
         <template #append>
           <v-btn class="mr-3" @click="toggleTheme">
@@ -11,14 +11,14 @@
             <v-icon v-else icon="mdi-moon-waning-crescent" color="gray"></v-icon>
           </v-btn>
 
-          <v-btn icon class="mr-3">
+          <!-- <v-btn icon class="mr-3">
             <v-badge dot>
               <v-icon icon="mdi-bell-outline"></v-icon>
             </v-badge>
             <v-menu activator="parent">
               <Notificacoes :notificacoes="notificacoes" />
             </v-menu>
-          </v-btn>
+          </v-btn> -->
 
           <v-menu>
             <template #activator="{ props }">
@@ -29,8 +29,6 @@
             </template>
             <v-card min-width="230px" class="mt-5">
               <v-list nav density="compact">
-                <v-list-item prepend-icon="mdi-account" to="/perfil" title="Meu Perfil" />
-                <v-list-item color="primary" prepend-icon="mdi-cog" to="/configuracoes" title="Configurações" />
                 <v-list-item prepend-icon="mdi-logout" to="/logout" title="Sair" />
               </v-list>
             </v-card>
@@ -39,9 +37,8 @@
       </v-app-bar>
       <v-navigation-drawer style="position: fixed;" v-model="isOpenSBar" color="primary">
         <v-list>
-          <v-list-item  to="/inicio" prepend-icon="mdi-home" title="Início" />
-          <v-list-item to="/consultas" prepend-icon="mdi-list-box-outline" title="Consultas" />
-          <v-list-item to="/relatorios" prepend-icon="mdi-file-document-multiple" title="Relatórios" />
+          <!-- <v-list-item to="/inicioPsi" prepend-icon="mdi-home" title="início" /> -->
+          <v-list-item to="/consultasPsi" prepend-icon="mdi-list-box-outline" title="Consultas" />
         </v-list>
       </v-navigation-drawer>
       <v-main>
@@ -50,11 +47,11 @@
     </v-layout>
   </v-app>
 </template>
-
+  
 <script setup>
 import { useTheme } from "vuetify";
 import { onMounted, ref } from "vue";
-import Notificacoes from '@/components/DashBoard/Notificacoes.vue'
+// import Notificacoes from '@/components/DashBoard/Notificacoes.vue';
 import { useStore } from "vuex";
 
 const theme = useTheme();
@@ -81,3 +78,4 @@ function toggleTheme() {
 
 
 </script>
+  

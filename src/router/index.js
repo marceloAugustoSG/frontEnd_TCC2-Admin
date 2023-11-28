@@ -22,22 +22,22 @@ const routes =
       component: () => import("@/pages/login/Logout"),
     },
     {
-      name: "dashboard",
+      name: "dashboardAdmin",
       path: "/dashBoard",
-      component: () => import("@/pages/dashboard/Dashboard.vue"),
+      component: () => import("@/pages/dashboardAdmin/Dashboard.vue"),
 
       children: [
         {
           path: "/inicio",
-          component: () => import("@/pages/dashboard/Inicio.vue"),
+          component: () => import("@/pages/dashboardAdmin/Inicio.vue"),
         },
         {
           path: "/relatorios",
-          component: () => import("@/pages/relatorios/Relatorios.vue"),
+          component: () => import("@/pages/dashboardAdmin/relatorios/Relatorios.vue"),
         },
         {
           path: "/consultas",
-          component: () => import("@/pages/dashboard/Consultas.vue"),
+          component: () => import("@/pages/dashboardAdmin/Consultas.vue"),
         },
 
         {
@@ -49,7 +49,26 @@ const routes =
           component: () => import("@/components/DashBoard/Perfil.vue"),
         }
       ]
-    }]
+    },
+    {
+      name: "dashboardPsi",
+      path: "/dashBoardPsi",
+      component: () => import("@/pages/dashBoardPsi/DashBoardPsi.vue"),
+
+      children: [
+        {
+          path: "/inicioPsi",
+          component: () => import("@/pages/dashBoardPsi/Inicio.vue"),
+        },
+        {
+          path: "/consultasPsi",
+          component: () => import("@/pages/dashBoardPsi/Consultas.vue"),
+        },
+        
+      ]
+    },
+
+  ]
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,

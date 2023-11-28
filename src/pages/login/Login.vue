@@ -24,8 +24,7 @@
                     label="Senha" required />
                   <v-row class="pb-5">
                     <v-col>
-                      <v-btn prepend-icon="mdi-account-plus" to="/criarConta" color="secundary" class="w-100">Criar
-                        Conta</v-btn>
+                   
                     </v-col>
                     <v-col>
                       <v-btn type="submit" class="w-100" prepend-icon="mdi-login" color="primary">Entrar</v-btn>
@@ -75,21 +74,9 @@ async function submit() {
     console.error(error)
 
   }
-
-  // await store.dispatch('logar', usuario).then(() => {
-
-  //   const message = store.state.message
-  //   message ? alertMessage.value = true : alertMessage.value = false
-  //   router.push({ name: 'dashboard' })
-  // }).catch((e) => {
-  //   console.log(e)
-  // })
-
   await store.dispatch('logar', usuario)
 
 }
-
-
 
 </script>
 

@@ -125,7 +125,7 @@ const consultas = ref([]);
 onBeforeMount(async () => {
   try {
     await store.dispatch('listarConsultas');
-    consultas.value = store.getters.consultas;
+    consultas.value = store.getters.consultasAtendimentoPsicologico;
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
   }

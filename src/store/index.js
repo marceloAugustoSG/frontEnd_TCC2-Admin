@@ -4,6 +4,7 @@ import router from "@/router";
 import formatDate from "@/services/date";
 const store = createStore({
   state: {
+    // Administrador
     consulta: {
       Paciente: {
         id: '',
@@ -16,7 +17,8 @@ const store = createStore({
       },
       Profissional: {
         id: '',
-        nome: ''
+        nome: '',
+        especialidade: ''
       },
       data: '',
       data_solicitacao: '',
@@ -32,9 +34,45 @@ const store = createStore({
     profissionais: [],
     mensagem: '',
     isMessageSucesso: false,
-    isMessageExcluir: false
+    isMessageExcluir: false,
+    profissionais: [],
+    resposta: {
+      "Centro": String,
+      "Curso": String,
+      "Estudante de": String,
+      "Motivos para o atendimento": String,
+      "Respostas Confidencias": {
+        "1": String,
+        "2": String,
+        "3": String,
+        "4": String,
+        "5": String,
+        "6": String,
+        "7": String,
+        "8": String,
+        "9": String,
+        "10": String,
+        "11": String,
+        "12": String,
+        "13": String,
+        "14": String,
+        "15": String,
+        "16": String,
+        "17": String,
+        "18": String,
+        "19": String,
+        "20": String
+      }
+    },
+
+
+
+    // Psicologo
   },
   mutations: {
+    setProfissionais(state, payload) {
+      state.profissionais = payload
+    },
 
     setIsMessageExcluir(state, payload) {
       state.isMessageExcluir = payload
@@ -56,12 +94,48 @@ const store = createStore({
     },
     setProfissionais(state, payload) {
       state.profissionais = payload
-    }
+    },
+
+    setRespostas(state, payload) {
+      state.resposta = payload
+    },
   },
   getters: {
-    consultas: (state) => state.consultas
+    consultas: (state) => state.consultas,
+
+    consultasAtendimentoPsicologico: (state) => state.consultas.filter(consulta => consulta.servico === "Atendimento Psicológico"),
+    consultasExetoPsicologico: (state) => state.consultas.filter(consulta => consulta.servico !== "Atendimento Psicológico"),
+    respostasConfidenciais: (state) => JSON.parse(state.consulta.respostas),
+    // profissionais: (state) => state.profissionais.map(profissional => `${profissional.nome} (${profissional.especialidade})`),
+
+    profissionais: (state) => state.profissionais.map(profissional => ({
+      id: profissional.id, // substitua "id" pelo nome correto do campo na sua API
+      nome: `${profissional.nome} (${profissional.especialidade})`,
+      especialidade: profissional.especialidade
+    }))
+
   },
   actions: {
+
+    resposta({ commit }) {
+      commit('setRespostas', this.getters.respostasConfidenciais)
+      console.log(this.state.resposta)
+
+
+    },
+
+    async getProfissionais({ commit }) {
+      try {
+        const resposta = await http.get('profissionais')
+        commit('setProfissionais', resposta.data)
+        console.log(resposta.data)
+        console.log(this.state.profissionais)
+      } catch (error) {
+        console.error(error)
+
+      }
+
+    },
 
     IsMessage({ commit }, valor) {
       commit('setIsMessage', valor)
@@ -98,16 +172,9 @@ const store = createStore({
       let consultaId = Number(idConsulta);
       try {
         const data = await http.get(`consulta/${consultaId}`);
-        console.log('Consulta do GET:');
-        console.log(data.data);
         let dataConsulta = data.data.data ? formatDate(new Date(data.data.data)) : formatDate(null);
-        console.log(dataConsulta)
-        console.log("Data Consulta:")
-        console.log(dataConsulta)
-
         let datasolicitacao = new Date(data.data.data_solicitacao);
         datasolicitacao = formatDate(datasolicitacao);
-
         data.data.data = dataConsulta;
         data.data.data_solicitacao = datasolicitacao;
         commit('setConsulta', data.data);
@@ -124,12 +191,23 @@ const store = createStore({
         console.error(data)
 
         if (data.usuario.regra === 'psicologo') {
+          localStorage.setItem('isAdm', false)
+          localStorage.setItem('isPsi', true)
+
           localStorage.setItem('usuarioId', data.usuario.id)
           localStorage.setItem('token', data.token)
-          router.push({ name: 'dashboard' })
+          router.push({ name: 'dashboardPsi' })
         }
         if (data.usuario.regra === 'paciente') {
           router.push({ name: 'login' })
+
+        }
+        if (data.usuario.regra === 'administrador') {
+          localStorage.setItem('isAdm', true)
+          localStorage.setItem('isPsi', false)
+
+
+          router.push({ name: 'dashboardAdmin' })
 
         }
 
@@ -142,6 +220,8 @@ const store = createStore({
       try {
         const resposta = await http.get('profissionais')
         const data = await resposta.data
+        console.log(data.data)
+        // const nomeFormatado = data.nome.concat(`(${data.especialidade})`)
         commit('setProfissionais', data)
       } catch (e) {
         console.log(e)
@@ -174,13 +254,21 @@ const store = createStore({
 
 
     },
-  }, logout({ commit }) {
+  },
+  logout({ commit }) {
+    localStorage.clear()
     localStorage.removeItem('token')
-    localStorage.removeItem('pacienteId')
+    localStorage.removeItem('usuarioId')
     localStorage.removeItem('message')
     this.state.message = ''
     this.state.consultas = []
   },
+
+  gerarPlanilha({ commit }) {
+
+
+
+  }
 
 })
 
