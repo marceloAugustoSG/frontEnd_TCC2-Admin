@@ -1,9 +1,13 @@
+<!-- SeuComponente.vue -->
 <template>
-    inicio psi
+    <div>
+        <!-- Seu conteúdo aqui -->
+        <gerarExcel />
+    </div>
 </template>
-
-<script setup>
+  
+<script setup >
+import gerarExcel from '@/components/gerarPlanilha.vue';
 
 </script>
-
-<style></style>
+  

@@ -32,6 +32,14 @@ const routes =
           component: () => import("@/pages/dashboardAdmin/Inicio.vue"),
         },
         {
+          path: "/profissionais",
+          component: () => import("@/pages/dashboardAdmin/profissionais/listarProfissionais"),
+        },
+        {
+          path: "/cadastrarProfissional",
+          component: () => import("@/pages/dashboardAdmin/profissionais/cadastrarProfissionais.vue"),
+        },
+        {
           path: "/relatorios",
           component: () => import("@/pages/dashboardAdmin/relatorios/Relatorios.vue"),
         },
@@ -64,7 +72,7 @@ const routes =
           path: "/consultasPsi",
           component: () => import("@/pages/dashBoardPsi/Consultas.vue"),
         },
-        
+
       ]
     },
 

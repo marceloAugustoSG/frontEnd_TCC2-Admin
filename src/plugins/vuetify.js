@@ -5,11 +5,9 @@ import "vuetify/styles";
 
 // Composables
 import { createVuetify } from "vuetify";
-import { VDataIterator } from 'vuetify/labs/VDataIterator'
-import { VuetifyDateAdapter } from 'vuetify/labs/date/adapters/vuetify'
+import { VDataIterator } from 'vuetify/lib/components/VDataIterator/VDataIterator';
 import enUS from 'date-fns/locale/en-US'
 
-import { VDatePicker } from 'vuetify/labs/VDatePicker'
 
 const ligth = {
   dark: false,
@@ -50,13 +48,12 @@ const dark = {
 
 export default createVuetify({
   date: {
-    adapter: VuetifyDateAdapter,
+
     locale: {
       en: enUS,
     }
   }, components: {
     VDataIterator,
-    VDatePicker
   },
 
   theme: {

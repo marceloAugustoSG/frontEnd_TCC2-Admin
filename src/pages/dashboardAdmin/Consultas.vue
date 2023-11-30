@@ -44,7 +44,7 @@
                       : key === 'status' ? item.raw.status : 'Data ainda não definida'
                   " :class="{
     'text-blue': sortKey === key.toLowerCase(),
-    'text-orange': item.raw[key.toLowerCase()] === 'Agendada',
+    'text-orange': item.raw[key.toLowerCase()] === 'Solicitada',
     'text-green': item.raw[key.toLowerCase()] === 'Confirmada',
     'text-red': item.raw[key.toLowerCase()] === 'Cancelada'
   }
@@ -125,7 +125,8 @@ const consultas = ref([]);
 onBeforeMount(async () => {
   try {
     await store.dispatch('listarConsultas');
-    consultas.value = store.getters.consultasExetoPsicologico;
+    // consultas.value = store.getters.consultasExetoPsicologico;
+    consultas.value = store.getters.consultasExcetoPsicologicoSolicitada;
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
   }

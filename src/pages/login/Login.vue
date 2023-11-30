@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-dialog v-model="alertMessage" max-width="500" @click:animateClick="teste">
+    <v-dialog v-model="alertMessage" max-width="500">
       <v-card>
         <Alert type="error" title="Aviso" variant="outlined" text="email ou senha incorretos" />
       </v-card>
@@ -23,9 +23,10 @@
                       " :type="showpassword ? 'text' : 'password'" @click:append-inner="showpassword = !showpassword"
                     label="Senha" required />
                   <v-row class="pb-5">
-                    <v-col>
-                   
-                    </v-col>
+                    <!-- <v-col>
+                      <v-btn prepend-icon="mdi-account-plus" to="/criarConta" color="secundary" class="w-100">Criar
+                        Conta</v-btn>
+                    </v-col> -->
                     <v-col>
                       <v-btn type="submit" class="w-100" prepend-icon="mdi-login" color="primary">Entrar</v-btn>
                     </v-col>
@@ -61,22 +62,29 @@ const emailRules = ref([
   v => /^[a-zA-Z0-9._%+-]+@edu\.ufes\.br/.test(v) || 'E-mail deve ser válido(@edu.ufes.br)',
 ])
 
-function teste() {
-  alert('teste')
 
-}
 async function submit() {
+  
+  await store.dispatch('logar', usuario).then(() => {
+    const message = store.state.message
+    message ? alertMessage.value = true : alertMessage.value = false
+    router.push({ name: 'dashboard' })
+  }).catch((e) => {
+    console.log(e)
+  })
+}
 
+onBeforeMount(() => {
   try {
-    await store.dispatch('logar', usuario)
+    store.dispatch('init')
 
   } catch (error) {
     console.error(error)
 
   }
-  await store.dispatch('logar', usuario)
 
-}
+})
+
 
 </script>
 

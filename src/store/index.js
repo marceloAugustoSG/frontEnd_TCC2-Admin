@@ -2,6 +2,7 @@ import { createStore } from "vuex";
 import { http } from "@/services/axiosConfig";
 import router from "@/router";
 import formatDate from "@/services/date";
+import { ht } from "date-fns/locale";
 const store = createStore({
   state: {
     // Administrador
@@ -30,19 +31,21 @@ const store = createStore({
       servico: '',
       status: ''
     },
+
     consultas: [],
     profissionais: [],
     mensagem: '',
     isMessageSucesso: false,
     isMessageExcluir: false,
-    profissionais: [],
     resposta: {
       "Centro": String,
       "Curso": String,
       "Estudante de": String,
       "Motivos para o atendimento": String,
+      "Se mudou para estudar na UFES?": String,
+      "com quem você reside em Alegre?": String,
       "Respostas Confidencias": {
-        "1": String,
+        "1": Number,
         "2": String,
         "3": String,
         "4": String,
@@ -65,11 +68,52 @@ const store = createStore({
       }
     },
 
+    isPsi: Boolean,
+    consultasFiltradas: [],
+
+    dataIni: Date,
+    dataFim: Date,
+    filtro: String,
+    status: String,
+    message: '',
+
+    dialogExcluir: false
 
 
     // Psicologo
   },
   mutations: {
+
+    setDataConsulta(state, payload) {
+      state.consulta.data = payload
+    },
+
+    setDialogExcluir(state, payload) {
+      state.dialogExcluir = payload
+    },
+
+    setMessage(state, newMessage) {
+      state.message = newMessage
+    },
+    setStatus(state, payload) {
+      state.status = payload
+    },
+    setFiltro(state, payload) {
+      state.filtro = payload
+    },
+    setDataIni(state, payload) {
+      state.dataIni = payload
+    },
+    setDatafim(state, payload) {
+      state.dataFim = payload
+    },
+
+    setConsultasFiltradas(state, payload) {
+      state.consultasFiltradas = payload;
+    },
+    setPsi(state, payload) {
+      state.isPsi = payload
+    },
     setProfissionais(state, payload) {
       state.profissionais = payload
     },
@@ -92,34 +136,132 @@ const store = createStore({
     setConsultas(state, payload) {
       state.consultas = payload
     },
-    setProfissionais(state, payload) {
-      state.profissionais = payload
-    },
 
     setRespostas(state, payload) {
       state.resposta = payload
     },
   },
+
   getters: {
     consultas: (state) => state.consultas,
-
+    consultasFiltradas: (state) => state.consultasFiltradas,
     consultasAtendimentoPsicologico: (state) => state.consultas.filter(consulta => consulta.servico === "Atendimento Psicológico"),
     consultasExetoPsicologico: (state) => state.consultas.filter(consulta => consulta.servico !== "Atendimento Psicológico"),
     respostasConfidenciais: (state) => JSON.parse(state.consulta.respostas),
     // profissionais: (state) => state.profissionais.map(profissional => `${profissional.nome} (${profissional.especialidade})`),
-
+    consultasAgendadas: (state) => state.consultas.filter(consulta => consulta.status === 'Solicitada').length,
+    consultasConfirmadas: (state) => state.consultas.filter(consulta => consulta.status === 'Confirmada').length,
+    consultasCanceladas: (state) => state.consultas.filter(consulta => consulta.status === 'Cancelada').length,
+    consultasExcetoPsicologicoSolicitada: (state) =>
+      state.consultas.filter(
+        (consulta) =>
+          consulta.status !== "Solicitada" ||
+          consulta.servico !== "Atendimento Psicológico"
+      ),
     profissionais: (state) => state.profissionais.map(profissional => ({
       id: profissional.id, // substitua "id" pelo nome correto do campo na sua API
       nome: `${profissional.nome} (${profissional.especialidade})`,
       especialidade: profissional.especialidade
-    }))
+    })),
+
 
   },
   actions: {
 
+    setDataConsulta({ commit }, valor) {
+      commit('setDataConsulta', valor)
+    },
+
+    setDialogExcluir({ commit }, valor) {
+      console.log('alodfsd')
+      commit('setDialogExcluir', valor)
+    },
+
+    setStatus({ commit }, status) {
+      commit('setStatus', status)
+      console.log(this.state.status)
+    },
+    setDataInit({ commit }, data) {
+      commit('setDataIni', data)
+      console.log(this.state.dataIni)
+    },
+    setDataFim({ commit }, data) {
+      commit('setDatafim', data)
+      console.log(this.state.dataFim)
+    },
+    setFiltro({ commit }, filtro) {
+      commit('setFiltro', filtro)
+      console.log(this.state.filtro)
+    },
+
+    async gerarRelatorio({ commit }) {
+      try {
+        const consultas = this.getters.consultas;
+
+        // Defina as datas de início e fim (você pode ajustar conforme necessário)
+        const dataInicio = new Date(this.state.dataIni);
+        const dataFim = new Date(this.state.dataFim);
+        const filtro = this.state.filtro;
+        const status = this.state.status;
+
+
+        if (filtro === 'Todos') {
+
+          const consultasFiltradas = consultas.filter((consulta) => {
+            const dataConsulta = new Date(consulta.data_solicitacao);
+
+
+            return (
+              (dataConsulta >= new Date(dataInicio) || !dataInicio) &&
+              (dataConsulta <= new Date(dataFim) || !dataFim) &&
+              (consulta.status === status)
+            )
+          });
+          commit('setConsultasFiltradas', consultasFiltradas);
+        } else {
+
+          const consultasFiltradasSF = consultas.filter((consulta) => {
+            const dataConsulta = new Date(consulta.data_solicitacao);
+
+
+            return (
+              (dataConsulta >= new Date(dataInicio) || !dataInicio) &&
+              (dataConsulta <= new Date(dataFim) || !dataFim) &&
+              (consulta.status === status) &&
+              (consulta.servico === filtro)
+            );
+          });
+          commit('setConsultasFiltradas', consultasFiltradasSF);
+
+        }
+        console.log(this.state.consultasFiltradas)
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+
+    setPsi({ commit }, valor) {
+
+      commit('setPsi', valor)
+      console.log(this.state.isPsi)
+    },
+
     resposta({ commit }) {
       commit('setRespostas', this.getters.respostasConfidenciais)
       console.log(this.state.resposta)
+
+
+    },
+
+    async criarProfissional({ commit }, dados) {
+      try {
+        const resposta = await http.post('profissional', dados)
+        const data = await resposta.data
+        console.log(data)
+      } catch (error) {
+        console.error(error)
+      }
 
 
     },
@@ -150,7 +292,21 @@ const store = createStore({
 
     },
 
-    async agendarConsulta({ commit }) {
+    async criarNotificacao({ commit }) {
+      const notificacao = {
+        pacienteId: this.state.consulta.Paciente.id,
+        mensagem: `Consulta confirmada para o dia ${formatDate(this.state.consulta.data)}, no Castelinho, com o ${this.state.consulta.Profissional.especialidade} ${this.state.consulta.Profissional.nome}`
+      }
+      try {
+        const resposta = await http.post('notificar', notificacao)
+        const data = resposta.data
+        console.log(data)
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    async agendarConsulta({ commit, dispatch }) {
       let dataNula = new Date(0, 0, 0)
       const consulta = {
         status: this.state.consulta.status,
@@ -163,6 +319,7 @@ const store = createStore({
       try {
         const resposta = await http.put(`consulta/${consultaId}`, consulta)
         console.log(resposta.data)
+        this.dispatch('criarNotificacao')
       } catch (error) {
         console.error(error)
       }
@@ -191,20 +348,29 @@ const store = createStore({
         console.error(data)
 
         if (data.usuario.regra === 'psicologo') {
-          localStorage.setItem('isAdm', false)
-          localStorage.setItem('isPsi', true)
+          commit('setPsi', false)
+
+          localStorage.setItem('psi', false)
+          console.log(this.state.isPsi)
 
           localStorage.setItem('usuarioId', data.usuario.id)
           localStorage.setItem('token', data.token)
           router.push({ name: 'dashboardPsi' })
+          commit('setMessage', '')
         }
         if (data.usuario.regra === 'paciente') {
           router.push({ name: 'login' })
+          commit('setMessage', "Usuario sem permissão")
 
         }
         if (data.usuario.regra === 'administrador') {
-          localStorage.setItem('isAdm', true)
-          localStorage.setItem('isPsi', false)
+          // localStorage.setItem('isAdm', true)
+          // localStorage.setItem('isPsi', false)
+          commit('setPsi', true)
+          console.log(this.state.isPsi)
+
+          commit('setMessage', '')
+
 
 
           router.push({ name: 'dashboardAdmin' })
@@ -212,6 +378,7 @@ const store = createStore({
         }
 
       } catch (error) {
+        commit('setMessage', error.response.data.message)
         console.error(error)
       }
 
@@ -252,23 +419,39 @@ const store = createStore({
 
       }
 
-
     },
+    logout({ commit }) {
+      localStorage.clear()
+      localStorage.removeItem('token')
+      localStorage.removeItem('usuarioId')
+      localStorage.removeItem('message')
+      this.state.message = ''
+      this.state.consultas = []
+    },
+
+    init({ commit }) {
+
+      localStorage.clear()
+      localStorage.removeItem('token')
+      localStorage.removeItem('usuarioId')
+      localStorage.removeItem('message')
+      this.state.message = ''
+      this.state.consultas = []
+
+    }
+
   },
-  logout({ commit }) {
-    localStorage.clear()
-    localStorage.removeItem('token')
-    localStorage.removeItem('usuarioId')
-    localStorage.removeItem('message')
-    this.state.message = ''
-    this.state.consultas = []
-  },
-
-  gerarPlanilha({ commit }) {
 
 
 
-  }
+
+
+
+
+
+
+
+
 
 })
 

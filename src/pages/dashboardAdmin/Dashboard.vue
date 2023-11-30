@@ -39,8 +39,23 @@
       </v-app-bar>
       <v-navigation-drawer style="position: fixed;" v-model="isOpenSBar" color="primary">
         <v-list>
-          <v-list-item  to="/inicio" prepend-icon="mdi-home" title="Início" />
+          <v-list-item to="/inicio" prepend-icon="mdi-home" title="Início" />
           <v-list-item to="/consultas" prepend-icon="mdi-list-box-outline" title="Consultas" />
+          <v-list-group value="users">
+            <template #activator="{ props }">
+              <v-list-item v-bind="props" prepend-icon="mdi-account-group" title="Profissionais">
+              </v-list-item>
+            </template>
+
+            <v-list-item to="/cadastrarProfissional" prepend-icon="mdi-account-plus">
+              <v-list-item-title>Cadastrar</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item to="/profissionais" prepend-icon="mdi-view-list">
+              <v-list-item-title>Listar</v-list-item-title>
+            </v-list-item>
+
+          </v-list-group>
           <v-list-item to="/relatorios" prepend-icon="mdi-file-document-multiple" title="Relatórios" />
         </v-list>
       </v-navigation-drawer>
@@ -53,7 +68,7 @@
 
 <script setup>
 import { useTheme } from "vuetify";
-import { onMounted, ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import Notificacoes from '@/components/DashBoard/Notificacoes.vue'
 import { useStore } from "vuex";
 
@@ -67,8 +82,8 @@ const notificacoes = [
   { title: "notificacao 3" },
   { title: "notificacao 4" },
 ];
-onMounted(() => {
-  store.dispatch('listarConsultas')
+onBeforeMount(async () => {
+  await store.dispatch('listarConsultas')
 })
 function toggleTheme() {
   theme.global.name.value = theme.global.current.value.dark

@@ -1,36 +1,6 @@
 <template>
     <v-container>
-        <v-dialog v-model="dialogErro">
-            <v-card class=" mx-auto" style="width: 400px;">
-                <v-toolbar title="Aviso" color="primary" />
-                <v-card-text>
-                    Forneça uma data e horario para a consulta
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer />
-                    <v-btn @click="fecharDialogErro" text="OK" />
-                </v-card-actions>
-            </v-card>
-
-        </v-dialog>
-        <v-dialog v-model="dialogExcluir">
-            <v-card class=" mx-auto" style="width: 300px;">
-                <v-toolbar title="Aviso" color="primary" />
-                <v-card-text style="text-align: justify;">Tem certeza que deseja excluir esse agendamento?</v-card-text>
-                <v-card-actions>
-                    <v-spacer />
-                    <v-btn text="Sim" variant="tonal" @click="excluirAgendamento" />
-                    <v-btn text="Não" variant="tonal" @click="fecharDialogExcluir" />
-                </v-card-actions>
-                <p>{{ props.consulta.id }}</p>
-                <v-dialog v-model="store.state.isMessageExcluir">
-                    <mensagemSucesso mensagem="Agendamento Excluido com sucesso!" />
-                </v-dialog>
-            </v-card>
-        </v-dialog>
-
         <v-dialog v-model="dialog">
-            <p>{{ nomeProfissional }}</p>
             <v-card class=" mx-auto" style="width: 1000px;">
                 <v-toolbar color="primary" :title="!ativarEdicao ? 'Editar consulta' : 'Detalhes da Consulta'">
                     <v-btn icon @click="EnabledEdit()" :disabled="props.consulta.status === 'Confirmada'">
@@ -69,7 +39,6 @@
                             <v-col cols="12" lg="4">
                                 <v-select label="Status" v-model="store.state.consulta.status" :items="selectTipos"
                                     :disabled="ativarEdicao" />
-
                                 <v-text-field v-if="props.consulta.status === 'Confirmada'"
                                     :type="ativarEdicao ? 'text' : 'datetime-local'" label="Data e Horário para a consulta"
                                     v-model="store.state.consulta.data" :disabled="ativarEdicao" />
@@ -81,7 +50,9 @@
                                 <v-select label="Profissional" v-model="nomeProfissional"
                                     :items="store.getters.profissionais" :item-value="profissional => profissional.id"
                                     :item-title="profissional => profissional.nome" :disabled="ativarEdicao"
-                                    v-show="!isPsi" />
+                                    v-show="store.state.isPsi" />
+
+
                                 <v-text-field label="Data de Solicitação" v-model="store.state.consulta.data_solicitacao"
                                     disabled />
                             </v-col>
@@ -97,25 +68,18 @@
                     <v-card-item>
                         <v-card-actions>
                             <v-spacer />
-                            <v-btn v-show="store.state.consulta.servico === 'Atendimento Psicológico'"
+                            <v-btn v-show="store.state.consulta.servico === 'Atendimento Psicológico' && psi === 'false'"
                                 text="Ver Respostas Confidências" @click="showDialogRespostas" variant="outlined" />
                             <v-btn class="mr-5" text="Salvar" variant="tonal" @click="salvar" :disabled="ativarEdicao" />
                             <v-btn @click="fechar" text="Fechar" variant="tonal" />
                         </v-card-actions>
                     </v-card-item>
                 </form>
-
-
             </v-card>
-
         </v-dialog>
-
         <v-dialog v-model="store.state.isMessageSucesso">
             <mensagemSucesso :mensagem="mensagem" />
         </v-dialog>
-
-
-
     </v-container>
 
     <v-dialog v-model="showRespostas">
@@ -123,10 +87,17 @@
             <v-toolbar title="Respostas Confidências" />
             <v-card-item class="ma-5">
                 <v-row>
-                    <v-col cols="12" style="display: flex; align-items: center; justify-content: space-between;">
-                        |<p>Curso: {{ store.state.resposta['Curso'] }}</p>|
-                        <p>Estudante de: {{ store.state.resposta['Estudante de'] }}</p>|
-                        <p>Motivos para o atendimento: {{ store.state.resposta['Motivos para o atendimento'] }}</p>|
+                    <v-col cols="12">
+                        <p>Curso: {{ store.state.resposta['Curso'] }}</p>
+                        <p>Estudante de: {{ store.state.resposta['Estudante de'] }}</p>
+                        <p>Motivos para o atendimento: {{ store.state.resposta['Motivos para o atendimento'] }}</p>
+                        <p>Se mudou para estudar na UFES? {{ store.state.resposta['Se mudou para estudar na UFES?'] }}</p>
+                        <p>com quem você reside em Alegre?? {{ store.state.resposta['com quem você reside em Alegre?'] }}
+                        </p>
+                    </v-col>
+                    <v-col cols="12">
+
+
                     </v-col>
                 </v-row>
                 <v-row>
@@ -147,11 +118,12 @@
             </v-card-item>
             <v-card-actions class="ma-3">
                 <v-spacer />
-                <v-btn text="Gerar Planilha" variant="tonal" @click="gerarPlanilha" />
+                <gerarExcel :json-data="store.state.resposta" style="margin-right: 30px;" />
                 <v-btn @click="fecharRespostas" text="Fechar" variant="tonal" />
             </v-card-actions>
         </v-card>
     </v-dialog>
+
 
     <div style="display: flex;" v-if="props.consulta.status === 'Confirmada'">
         <v-btn icon="mdi-eye" @click="abrirDialog" />
@@ -160,58 +132,68 @@
     <div style="display: flex;" v-if="props.consulta.status === 'Cancelada'">
         <v-btn icon="mdi-alpha-x-circle" @click="abrirDialogExcluir" />
     </div>
-    <div v-if="props.consulta.status === 'Agendada'">
+    <div v-if="props.consulta.status === 'Solicitada'">
         <v-btn icon="mdi-eye" @click="abrirDialog" />
     </div>
+
+    <v-dialog v-model="store.state.dialogExcluir">
+        <v-card class=" mx-auto" style="width: 300px;">
+            <v-toolbar title="Aviso" color="primary" />
+            <v-card-text style="text-align: justify;">Tem certeza que deseja excluir esse agendamento?</v-card-text>
+            <v-card-actions>
+                <v-spacer />
+                <v-btn text="Sim" variant="tonal" @click="excluirAgendamento" />
+                <v-btn text="Não" variant="tonal" @click="fecharDialogExcluir" />
+            </v-card-actions>
+            <p>{{ props.consulta.id }}</p>
+            <v-dialog v-model="store.state.isMessageExcluir">
+                <mensagemSucesso mensagem="Agendamento Excluido com sucesso!" />
+            </v-dialog>
+        </v-card>
+    </v-dialog>
 </template>
 
 <script setup>
 import formatDate from '@/services/date';
-import { defineProps, ref } from 'vue';
+import { defineProps, onBeforeMount, ref } from 'vue';
 import { useStore } from 'vuex';
 import mensagemSucesso from '@/components/Mensagens/mensagemSucesso.vue'
-const dialog = ref(false)
-const dialogExcluir = ref(false)
-let ativarEdicao = ref(true)
-let dataProps = props.consulta.data
-const dialogErro = ref(false)
-const mensagem = ref("Consulta Confirmada com Sucesso !")
+import gerarExcel from '@/components/gerarPlanilha.vue';
 
-const isPsi = localStorage.getItem('isPsi')
-
-let showRespostas = ref(false)
-
-const nomeProfissional = ref('')
-nomeProfissional.value = props.consulta.Profissional ? props.consulta.Profissional.nome : 'Profissional Indefinido'
-
-
-
-
-
-
-function showDialogRespostas() {
-    console.log(store.getters.respostasConfidenciais)
-    store.dispatch('resposta')
-    showRespostas.value = true
-
-}
-
-
-function fecharRespostas() {
-    showRespostas.value = false
-}
-
-const store = useStore()
-
+const psi = localStorage.getItem('psi')
 const props = defineProps({
     consulta: Object
 })
 
-
-
+//Variáveis e constantes
+const dialog = ref(false)
+const dialogExcluir = ref(false)
+let ativarEdicao = ref(true)
+const dialogErro = ref(false)
+const mensagem = ref("Consulta Confirmada com Sucesso !")
+const store = useStore()
+let showRespostas = ref(false)
+//props
+const nomeProfissional = ref('')
+nomeProfissional.value = props.consulta.Profissional ? props.consulta.Profissional.nome : 'Profissional Indefinido'
 const selectTipos = ref(['Confirmada', 'Cancelada'])
 
+let dataProps = props.consulta.data
+
+//Funções
+function showDialogRespostas() {
+    store.dispatch('resposta')
+    showRespostas.value = true
+
+}
+function fecharRespostas() {
+    showRespostas.value = false
+}
+
+
 function fecharDialogExcluir() {
+
+    store.dispatch('setDialogExcluir', false)
     dialogExcluir.value = false
 
 }
@@ -229,11 +211,6 @@ async function excluirAgendamento() {
     } catch (error) {
 
     }
-
-}
-
-async function gerarPlanilha() {
-
 }
 
 async function salvar() {
@@ -241,7 +218,9 @@ async function salvar() {
     console.log(store.state.consulta.data)
     console.log(dataP)
     if (dataP === store.state.consulta.data) {
+        store.dispatch('setDataConsulta', '')
         console.log('datas iguais')
+        dataP = ''
         dialogErro.value = true
 
     } else {
@@ -286,6 +265,8 @@ async function fechar() {
 }
 
 async function abrirDialogExcluir() {
+
+    store.dispatch('setDialogExcluir', true)
     dialogExcluir.value = true
 
 
@@ -313,8 +294,10 @@ function EnabledEdit() {
 
 }
 
+onBeforeMount(() => {
+    store.dispatch('setDataConsulta', null)
 
-
+})
 
 </script>
 

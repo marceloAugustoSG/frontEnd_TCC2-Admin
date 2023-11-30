@@ -44,7 +44,7 @@
                       : key === 'status' ? item.raw.status : 'Data ainda não definida'
                   " :class="{
     'text-blue': sortKey === key.toLowerCase(),
-    'text-orange': item.raw[key.toLowerCase()] === 'Agendada',
+    'text-orange': item.raw[key.toLowerCase()] === 'Solicitada',
     'text-green': item.raw[key.toLowerCase()] === 'Confirmada',
     'text-red': item.raw[key.toLowerCase()] === 'Cancelada'
   }
