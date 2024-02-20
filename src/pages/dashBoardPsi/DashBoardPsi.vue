@@ -37,7 +37,7 @@
       </v-app-bar>
       <v-navigation-drawer style="position: fixed;" v-model="isOpenSBar" color="primary">
         <v-list>
-          <!-- <v-list-item to="/inicioPsi" prepend-icon="mdi-home" title="início" /> -->
+          <v-list-item to="/inicioPsi" prepend-icon="mdi-home" title="início" />
           <v-list-item to="/consultasPsi" prepend-icon="mdi-list-box-outline" title="Consultas" />
         </v-list>
       </v-navigation-drawer>

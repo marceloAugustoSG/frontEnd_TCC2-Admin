@@ -8,24 +8,25 @@
             <form>
               <v-row>
                 <v-col cols="3">
-                  <v-text-field v-model="dataInicio" type="date" label="Data de inicio" />
+                  <v-text-field density="comfortable" variant="outlined" v-model="dataInicio" type="date" label="Data de inicio" />
                 </v-col>
                 <v-col cols="3">
-                  <v-text-field v-model="dataFim" type="date" label="Data de fim" />
+                  <v-text-field density="comfortable" variant="outlined" v-model="dataFim" type="date" label="Data de fim" />
                 </v-col>
                 <v-col cols="3">
-                  <v-select v-model="filtro" label="Filtro"
+                  <v-select density="comfortable" variant="outlined" v-model="filtro" label="Serviço"
                     :items="['Atendimento Médico', 'Atendimento Psicológico', 'Todos']" />
                 </v-col>
                 <v-col cols="3">
-                  <v-select v-model="status" label="Status" :items="['Solicitada', 'Confirmada', 'Cancelada']" />
+                  <v-select variant="outlined" v-model="status" label="Status"
+                    :items="['Solicitada', 'Confirmada', 'Cancelada', 'Todos']" density="comfortable" />
                 </v-col>
               </v-row>
             </form>
           </v-card-text>
           <v-card-actions class="pa-5">
             <span>Data de início: {{ dataInicio }}</span> <v-spacer /><span>Data de fim: {{ dataFim }}
-              <v-spacer /></span><v-spacer /><span>Filtro:
+              <v-spacer /></span><v-spacer /><span>Serviço:
               {{ filtro }}</span><v-spacer /><span>Status:
               {{ status }}</span>
             <v-spacer />
@@ -36,7 +37,7 @@
       </v-col>
     </v-row>
 
-    <v-dialog v-model="showRelatorio">
+    <v-dialog v-model="store.state.showRelatorio">
       <Relatorio />
 
     </v-dialog>
@@ -69,6 +70,7 @@ async function gerarRelatorio() {
 
 
   await store.dispatch('gerarRelatorio')
+  await store.dispatch('setShowRelatorio', true)
 
 
 }

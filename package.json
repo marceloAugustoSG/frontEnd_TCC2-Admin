@@ -12,6 +12,7 @@
     "@ohmygodvt95/vue3-pikaday": "^1.0.0",
     "@vuepic/vue-datepicker": "^6.0.1",
     "axios": "^1.4.0",
+    "chart.js": "^4.4.1",
     "date-fns": "^2.30.0",
     "exceljs": "^4.4.0",
     "jspdf": "^2.5.1",

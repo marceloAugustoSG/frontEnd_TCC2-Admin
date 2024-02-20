@@ -9,7 +9,7 @@
       <v-row class="p-4">
         <v-col cols="12" lg="3" md="2" sm="2" xl="4" />
         <v-col cols="12" lg="6" md="8" sm="8" xl="4">
-          <v-card>
+          <v-sheet max-width="400" class="mx-auto pa-3" border rounded>
             <v-card-text>
               <h2 class="text-center">Login</h2>
             </v-card-text>
@@ -28,13 +28,14 @@
                         Conta</v-btn>
                     </v-col> -->
                     <v-col>
-                      <v-btn type="submit" class="w-100" prepend-icon="mdi-login" color="primary">Entrar</v-btn>
+                      <v-btn type="submit" class="w-100" text="Entrar" prepend-icon="mdi-login"
+                        color="primary">Entrar</v-btn>
                     </v-col>
                   </v-row>
                 </form>
               </v-card-item>
             </v-card>
-          </v-card>
+          </v-sheet>
           <v-col cols="12" lg="3" md="2" sm="2" xl="4" />
         </v-col>
       </v-row>
@@ -64,7 +65,7 @@ const emailRules = ref([
 
 
 async function submit() {
-  
+
   await store.dispatch('logar', usuario).then(() => {
     const message = store.state.message
     message ? alertMessage.value = true : alertMessage.value = false

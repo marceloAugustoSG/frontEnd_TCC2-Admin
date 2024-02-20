@@ -11,14 +11,6 @@
             <v-icon v-else icon="mdi-moon-waning-crescent" color="gray"></v-icon>
           </v-btn>
 
-          <!-- <v-btn icon class="mr-3">
-            <v-badge dot>
-              <v-icon icon="mdi-bell-outline"></v-icon>
-            </v-badge>
-            <v-menu activator="parent">
-              <Notificacoes :notificacoes="notificacoes" />
-            </v-menu>
-          </v-btn> -->
 
           <v-menu>
             <template #activator="{ props }">
@@ -29,8 +21,6 @@
             </template>
             <v-card min-width="230px" class="mt-5">
               <v-list nav density="compact">
-                <!-- <v-list-item prepend-icon="mdi-account" to="/perfil" title="Meu Perfil" /> -->
-                <!-- <v-list-item color="primary" prepend-icon="mdi-cog" to="/configuracoes" title="Configurações" /> -->
                 <v-list-item prepend-icon="mdi-logout" to="/logout" title="Sair" />
               </v-list>
             </v-card>
@@ -41,6 +31,7 @@
         <v-list>
           <v-list-item to="/inicio" prepend-icon="mdi-home" title="Início" />
           <v-list-item to="/consultas" prepend-icon="mdi-list-box-outline" title="Consultas" />
+          <v-list-item to="/teste" prepend-icon="mdi-list-box-outline" title="Teste" />
           <v-list-group value="users">
             <template #activator="{ props }">
               <v-list-item v-bind="props" prepend-icon="mdi-account-group" title="Profissionais">
@@ -69,19 +60,13 @@
 <script setup>
 import { useTheme } from "vuetify";
 import { onBeforeMount, ref } from "vue";
-import Notificacoes from '@/components/DashBoard/Notificacoes.vue'
 import { useStore } from "vuex";
 
 const theme = useTheme();
 const isOpenSBar = ref(true);
 const store = useStore();
 
-const notificacoes = [
-  { title: "notificacao 1" },
-  { title: "notificacao 2" },
-  { title: "notificacao 3" },
-  { title: "notificacao 4" },
-];
+
 onBeforeMount(async () => {
   await store.dispatch('listarConsultas')
 })
@@ -90,9 +75,5 @@ function toggleTheme() {
     ? "ligth"
     : "dark";
 }
-
-
-
-
 
 </script>

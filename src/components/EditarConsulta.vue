@@ -1,70 +1,77 @@
 <template>
     <v-container>
         <v-dialog v-model="dialog">
-            <v-card class=" mx-auto" style="width: 1000px;">
+            <p>{{ props.consulta.id }}</p>
+
+            <v-sheet class=" mx-auto" style="width:  1000px;" border rounded>
                 <v-toolbar color="primary" :title="!ativarEdicao ? 'Editar consulta' : 'Detalhes da Consulta'">
-                    <v-btn icon @click="EnabledEdit()" :disabled="props.consulta.status === 'Confirmada'">
+                    <v-btn icon @click="EnabledEdit()"
+                        :disabled="props.consulta.status === 'Confirmada' || psi === 'false'">
                         <v-icon :icon="!ativarEdicao ? 'mdi-pencil-off' : 'mdi-pencil'" />
                     </v-btn>
                 </v-toolbar>
                 <form @submit.prevent="submit">
-                    <v-card-item>
-                        <v-card-subtitle class="ml-5">
-                            Paciente
-                        </v-card-subtitle>
+                    <v-sheet border rounded class="ma-2 pa-2">
+
+                        <h3 class="ml-5"> Paciente</h3>
+
                         <v-row class="ma-3">
                             <v-col cols="12" lg="4">
-                                <v-text-field label="Nome" v-model="store.state.consulta.Paciente.nome" disabled />
-                            </v-col>
-                            <v-col cols="12" lg="4">
-                                <v-text-field label="Vínculo" v-model="store.state.consulta.Paciente.tipo" disabled />
-                            </v-col>
-                            <v-col cols="12" lg="4">
-                                <v-text-field label="Matricula" v-model="store.state.consulta.Paciente.matricula"
+                                <v-text-field label="Nome" variant="outlined" v-model="store.state.consulta.Paciente.nome"
                                     disabled />
                             </v-col>
-                        </v-row>
-                    </v-card-item>
-                    <v-divider class="ma-5" />
-                    <v-card-item>
-                        <v-card-subtitle class="ml-5">
-                            Informações da Consulta
-                        </v-card-subtitle>
-                        <v-row class="ma-3">
                             <v-col cols="12" lg="4">
-                                <v-text-field label="Serviço" v-model="store.state.consulta.servico" disabled />
-                                <v-textarea rows="1" label="Observação" v-model="store.state.consulta.observacao"
-                                    :items="selectTipos" disabled />
+                                <v-text-field label="Vínculo" variant="outlined"
+                                    v-model="store.state.consulta.Paciente.tipo" disabled />
                             </v-col>
                             <v-col cols="12" lg="4">
-                                <v-select label="Status" v-model="store.state.consulta.status" :items="selectTipos"
-                                    :disabled="ativarEdicao" />
+                                <v-text-field label="Matricula" variant="outlined"
+                                    v-model="store.state.consulta.Paciente.matricula" disabled />
+                            </v-col>
+                            <v-col cols="12" lg="4">
+                                <v-text-field label="Telefone" variant="outlined"
+                                    v-model="store.state.consulta.Paciente.telefone" disabled />
+                            </v-col>
+                        </v-row>
+                    </v-sheet>
+                    <v-divider class="ma-5" />
+                    <v-sheet border rounded class="ma-2 pa-2">
+                        <h3 class="ml-5"> Informações da Consulta</h3>
+                        <v-row class="ma-3">
+                            <v-col cols="12" lg="4">
+                                <v-text-field label="Serviço" variant="outlined" v-model="store.state.consulta.servico"
+                                    disabled />
+                                <v-textarea rows="1" label="Observação" variant="outlined"
+                                    v-model="store.state.consulta.observacao" :items="selectTipos" disabled />
+                            </v-col>
+                            <v-col cols="12" lg="4">
+                                <v-select label="Status" variant="outlined" v-model="store.state.consulta.status"
+                                    :items="selectTipos" :disabled="ativarEdicao" />
                                 <v-text-field v-if="props.consulta.status === 'Confirmada'"
                                     :type="ativarEdicao ? 'text' : 'datetime-local'" label="Data e Horário para a consulta"
-                                    v-model="store.state.consulta.data" :disabled="ativarEdicao" />
-                                <v-text-field v-else type="datetime-local" label="Data e Horário para a consulta"
-                                    v-model="store.state.consulta.data" :disabled="ativarEdicao" />
+                                    v-model="store.state.consulta.data" variant="outlined" :disabled="ativarEdicao" />
+                                <v-text-field v-else type="datetime-local" variant="outlined"
+                                    label="Data e Horário para a consulta" v-model="store.state.consulta.data"
+                                    :disabled="ativarEdicao" />
 
                             </v-col>
                             <v-col cols="12" lg="4">
-                                <v-select label="Profissional" v-model="nomeProfissional"
+                                <v-select label="Profissional" variant="outlined" v-model="nomeProfissional"
                                     :items="store.getters.profissionais" :item-value="profissional => profissional.id"
-                                    :item-title="profissional => profissional.nome" :disabled="ativarEdicao"
-                                    v-show="store.state.isPsi" />
-
-
-                                <v-text-field label="Data de Solicitação" v-model="store.state.consulta.data_solicitacao"
-                                    disabled />
+                                    :item-title="profissional => profissional.nome" :disabled="ativarEdicao" />
+                                <v-text-field label="Data de Solicitação" variant="outlined"
+                                    v-model="store.state.consulta.data_solicitacao" disabled />
                             </v-col>
+
                             <v-col cols="12" lg="4">
 
                             </v-col>
                         </v-row>
-                        <v-row class="ma-3">
-                            <v-col>
-                            </v-col>
-                        </v-row>
-                    </v-card-item>
+                    </v-sheet>
+                    <v-row class="ma-3">
+                        <v-col>
+                        </v-col>
+                    </v-row>
                     <v-card-item>
                         <v-card-actions>
                             <v-spacer />
@@ -75,7 +82,7 @@
                         </v-card-actions>
                     </v-card-item>
                 </form>
-            </v-card>
+            </v-sheet>
         </v-dialog>
         <v-dialog v-model="store.state.isMessageSucesso">
             <mensagemSucesso :mensagem="mensagem" />
@@ -146,10 +153,18 @@
                 <v-btn text="Não" variant="tonal" @click="fecharDialogExcluir" />
             </v-card-actions>
             <p>{{ props.consulta.id }}</p>
-            <v-dialog v-model="store.state.isMessageExcluir">
-                <mensagemSucesso mensagem="Agendamento Excluido com sucesso!" />
+            <v-dialog v-model="store.state.isMessageSucesso">
+                <mensagemSucesso />
             </v-dialog>
+
+            <v-dialog v-model="store.state.isMessageExcluir">
+                <mensagemSucessoExcluir />
+            </v-dialog>
+
         </v-card>
+    </v-dialog>
+    <v-dialog v-model="store.state.showAvisoDataObg">
+        <avisoDataObrigatoria />
     </v-dialog>
 </template>
 
@@ -158,8 +173,11 @@ import formatDate from '@/services/date';
 import { defineProps, onBeforeMount, ref } from 'vue';
 import { useStore } from 'vuex';
 import mensagemSucesso from '@/components/Mensagens/mensagemSucesso.vue'
+import mensagemSucessoExcluir from './Mensagens/mensagemSucessoExcluir.vue';
+import avisoDataObrigatoria from './Mensagens/avisoDataObrigatoria.vue';
 import gerarExcel from '@/components/gerarPlanilha.vue';
 
+let teste = true
 const psi = localStorage.getItem('psi')
 const props = defineProps({
     consulta: Object
@@ -167,10 +185,7 @@ const props = defineProps({
 
 //Variáveis e constantes
 const dialog = ref(false)
-const dialogExcluir = ref(false)
 let ativarEdicao = ref(true)
-const dialogErro = ref(false)
-const mensagem = ref("Consulta Confirmada com Sucesso !")
 const store = useStore()
 let showRespostas = ref(false)
 //props
@@ -178,9 +193,14 @@ const nomeProfissional = ref('')
 nomeProfissional.value = props.consulta.Profissional ? props.consulta.Profissional.nome : 'Profissional Indefinido'
 const selectTipos = ref(['Confirmada', 'Cancelada'])
 
+
 let dataProps = props.consulta.data
 
-//Funções
+
+function fecharDialogExcluir() {
+    store.dispatch('setDialogExcluir', false)
+
+}
 function showDialogRespostas() {
     store.dispatch('resposta')
     showRespostas.value = true
@@ -190,25 +210,13 @@ function fecharRespostas() {
     showRespostas.value = false
 }
 
-
-function fecharDialogExcluir() {
-
-    store.dispatch('setDialogExcluir', false)
-    dialogExcluir.value = false
-
-}
-function fecharDialogErro() {
-    dialogErro.value = false
-
-}
-
 async function excluirAgendamento() {
     try {
         store.dispatch('IsMessageExcluir', true);
-
         await store.dispatch('excluirConsulta', props.consulta.id)
 
     } catch (error) {
+        console.error(error)
 
     }
 }
@@ -218,34 +226,34 @@ async function salvar() {
     console.log(store.state.consulta.data)
     console.log(dataP)
     if (dataP === store.state.consulta.data) {
+        store.dispatch('setAvisoDataObg', true)
         store.dispatch('setDataConsulta', '')
         console.log('datas iguais')
         dataP = ''
-        dialogErro.value = true
+        store.dispatch('IsMessage', false);
 
     } else {
-        console.log('datas diferentes')
-        console.log(dataP)
-        console.log(store.state.consulta.data)
-
         store.state.consulta.profissionalId = nomeProfissional.value
+
         try {
+            await store.dispatch('getProfissionalById', nomeProfissional.value)
             await store.dispatch('agendarConsulta');
+            await store.dispatch('criarNotificacao', props.consulta.pacienteId)
+            store.dispatch('IsMessage', true);
+
         } catch (error) {
             console.error(error);
         }
 
-        // Aguarda 4 segundos antes de chamar a função fechar
-        store.dispatch('IsMessage', true);
         store.dispatch('listarConsultas');
         console.log(store.state.consulta.data)
 
 
         setTimeout(() => {
             fechar();
-        }, 500); // 4000 milissegundos = 4 segundos
-    }
+        }, 500);
 
+    }
 }
 
 async function fechar() {
@@ -267,15 +275,22 @@ async function fechar() {
 async function abrirDialogExcluir() {
 
     store.dispatch('setDialogExcluir', true)
-    dialogExcluir.value = true
+
 
 
 }
 const profissionais = ref([])
+
+
 async function abrirDialog() {
     try {
         await store.dispatch('getConsulta', props.consulta.id)
         await store.dispatch('getProfissionais')
+        if (store.state.consulta.Profissional) {
+        } else {
+            console.log('Profissional indefinido')
+
+        }
 
     } catch (error) {
         console.error(error)
@@ -290,12 +305,12 @@ async function abrirDialog() {
 function EnabledEdit() {
     ativarEdicao.value = !ativarEdicao.value
 
-    console.log(ativarEdicao.value)
 
 }
 
 onBeforeMount(() => {
-    store.dispatch('setDataConsulta', null)
+    console.error('montando....')
+
 
 })
 

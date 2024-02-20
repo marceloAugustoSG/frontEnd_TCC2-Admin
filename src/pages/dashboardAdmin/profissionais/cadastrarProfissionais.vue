@@ -1,26 +1,16 @@
 <template>
     <v-container>
-        <v-card title="Criar Profissional" elevation="10" class="ma-5 pa-5">
+        <v-card title="Cadastrar Profissional" elevation="10" class="ma-5 pa-5">
             <form @submit.prevent="submit">
                 <v-row>
                     <v-col>
                         <v-text-field label="Nome" v-model="nome" requerid />
                     </v-col>
-
-                    <v-col>
-                        <v-text-field label="E-mail" v-model="email" requerid />
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col>
-                        <v-text-field label="Senha" v-model="senha" requerid />
-                    </v-col>
-
                     <v-col>
                         <v-select label="Especialidade" v-model="especialidade" :items="['Médico', 'Psicologo']" requerid />
                     </v-col>
                 </v-row>
-                <v-btn text="Criar Profissional" variant="tonal" @click="submit" />
+                <v-btn text="Cadastrar " variant="tonal" @click="submit" />
             </form>
         </v-card>
     </v-container>

@@ -1,16 +1,17 @@
 <template>
-  <v-data-iterator v-model:items-per-page="itemsPerPage" v-model:page="page" :items="consultas" :search="search"
-    :sort-by="sortBy">
+  <!-- <v-container> -->
+  <v-data-iterator :page="page" :items-per-page="itemsPerPage" :items="consultas" :search="search" :sort-by="sortBy">
     <template v-slot:header>
-      <v-toolbar dark color="primary" class="px-2 mb-2">
+      <v-toolbar dark class="px-2 ma-5">
         <v-text-field v-model="search" clearable hide-details prepend-inner-icon="mdi-magnify" placeholder="Procurar"
-          variant="solo" density="comfortable"></v-text-field>
-        <v-spacer></v-spacer>
+          variant="outlined" density="comfortable" />
+        <v-spacer />
 
         <v-select v-model="sortKey" hide-details :items="ops" item-title="nome" item-value="valor"
-          prepend-inner-icon="mdi-sort" label="ordenar por " density="comfortable"></v-select>
-        <v-spacer></v-spacer>
-        <v-btn-toggle v-model="sortOrder" mandatory>
+          prepend-inner-icon="mdi-sort" label="ordenar por " variant="outlined" density="comfortable" />
+        <v-spacer />
+
+        <v-btn-toggle v-model="sortOrder" mandatory class="mr-5">
           <v-btn color="blue" value="asc">
             <v-icon>mdi-arrow-up</v-icon>
           </v-btn>
@@ -28,8 +29,8 @@
     <template v-slot:default="props">
       <v-row class="ma-2">
         <v-col v-for="item in        props.items       " :key="item.servico" cols="12" sm="6" md="4" lg="4">
-          <v-card elevation="10">
-            <v-toolbar :title="item.raw.servico" color="primary">
+          <v-sheet elevation="3" border rounded>
+            <v-toolbar :title="item.raw.servico">
               <div style="display: flex;" class="mr-1">
                 <editar-consulta :consulta="item.raw" />
               </div>
@@ -51,17 +52,17 @@
     ">
               </v-list-item>
             </v-list>
-          </v-card>
+          </v-sheet>
         </v-col>
       </v-row>
     </template>
 
     <template v-slot:footer>
       <div class="d-flex align-center justify-space-around pa-4">
-        <span class="grey--text">Itens por página</span>
+        <span class="gren--text">Itens por página</span>
         <v-menu>
           <template v-slot:activator="{ props }">
-            <v-btn variant="text" color="primary" class="ml-2" append-icon="mdi-chevron-down" v-bind="props">
+            <v-btn variant="outlined" class="ml-2" append-icon="mdi-chevron-down" v-bind="props">
               {{ itemsPerPage }}
             </v-btn>
           </template>
@@ -75,10 +76,10 @@
           grey--text">
           Página {{ page }} de {{ numberOfPages }}
         </span>
-        <v-btn icon size="small" @click="prevPage">
+        <v-btn icon size="small" @click="prevPage" variant="outlined">
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
-        <v-btn icon size="small" class="ml-2" @click="nextPage">
+        <v-btn icon size="small" class="ml-2" @click="nextPage" variant="outlined">
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
       </div>
@@ -92,11 +93,11 @@ import { ref, computed, onBeforeMount } from 'vue';
 import { useStore } from 'vuex';
 import EditarConsulta from '@/components/EditarConsulta.vue';
 const store = useStore()
-const itemsPerPageArray = ref([4, 6, 9, 12, 100]);
-const itemsPerPage = ref(3);
+const itemsPerPageArray = ref([3, 4, 6, 9, 12]);
+const itemsPerPage = ref(10);
 const page = ref(1);
 const search = ref('');
-const sortKey = ref('status');
+const sortKey = ref('Paciente.nome');
 const sortOrder = ref('asc');
 const keys = ref([
   'Paciente.nome',
@@ -125,8 +126,7 @@ const consultas = ref([]);
 onBeforeMount(async () => {
   try {
     await store.dispatch('listarConsultas');
-    // consultas.value = store.getters.consultasExetoPsicologico;
-    consultas.value = store.getters.consultasExcetoPsicologicoSolicitada;
+    consultas.value = store.getters.consultas;
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
   }
@@ -141,6 +141,7 @@ const sortBy = computed(() => {
     {
       key: sortKey.value,
       order: sortOrder.value,
+
     },
   ];
 });
@@ -154,4 +155,7 @@ const prevPage = () => {
 };
 
 
+
 </script>
+
+

@@ -22,12 +22,18 @@ const props = defineProps({
 })
 const store = useStore()
 
+function excluirAgendamento(idConsulta){
+
+    store.dispatch('excluirConsulta',idConsulta)
+}
+store.dispatch('setDialogExcluir', true)
+
 function fecharDialogExcluir() {
 
     store.dispatch('setDialogExcluir', false)
 
 }
-
+z
 onBeforeMount(() => {
     console.log(props.consulta.id)
 })

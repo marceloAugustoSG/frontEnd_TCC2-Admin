@@ -19,7 +19,7 @@
                                 <td>{{ consulta.Paciente.nome }}</td>
                                 <td>{{ consulta.Profissional ? consulta.Profissional.nome : 'Não Definido' }}</td>
                                 <td>{{ consulta.servico }}</td>
-                                <td>{{ formatDate(consulta.data) }}</td>
+                                <td>{{ consulta.data ? formatDate(consulta.data) : 'Data indefinida' }}</td>
                                 <td>{{ consulta.status }}</td>
                                 <td>{{ formatDate(consulta.data_solicitacao) }}</td>
                             </tr>
@@ -57,6 +57,12 @@ const consultasFiltradas = computed(() => {
 const totalConsultas = computed(() => {
     return consultasFiltradas.value.length;
 });
+
+function fechar() {
+
+    store.dispatch('setShowRelatorio', false)
+
+}
 
 const gerarPDF = () => {
     const doc = new jsPDF();

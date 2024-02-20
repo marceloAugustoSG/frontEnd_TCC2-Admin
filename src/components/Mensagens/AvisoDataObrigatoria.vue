@@ -1,4 +1,4 @@
-<v-dialog v-model="dialogErro">
+<template>
     <v-card class=" mx-auto" style="width: 400px;">
         <v-toolbar title="Aviso" color="primary" />
         <v-card-text>
@@ -9,5 +9,19 @@
             <v-btn @click="fecharDialogErro" text="OK" />
         </v-card-actions>
     </v-card>
+</template>
 
-</v-dialog>
+<script setup>
+import { useStore } from 'vuex';
+const store = useStore()
+
+function fecharDialogErro() {
+    store.dispatch('setAvisoDataObg', false)
+
+
+
+}
+
+
+
+</script>
