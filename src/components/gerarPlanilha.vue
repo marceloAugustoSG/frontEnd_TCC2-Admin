@@ -1,4 +1,3 @@
-// Seu componente Vue
 <template>
     <div>
         <v-btn @click="generateExcel" text="Gerar planilha de respostas" variant="tonal" />

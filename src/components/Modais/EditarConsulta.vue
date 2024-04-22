@@ -1,8 +1,10 @@
 <template>
     <v-container>
-        <v-dialog v-model="dialog">
+        <v-dialog v-model="store.state.showMsgSemProfi" max-width="600px">
+            <v-alert closable type="warning">Cadastre algum profissional no Sistema</v-alert>
+        </v-dialog>
+        <v-dialog v-model="dialog" persistent>
             <p>{{ props.consulta.id }}</p>
-
             <v-sheet class=" mx-auto" style="width:  1000px;" border rounded>
                 <v-toolbar color="primary" :title="!ativarEdicao ? 'Editar consulta' : 'Detalhes da Consulta'">
                     <v-btn icon @click="EnabledEdit()"
@@ -17,8 +19,8 @@
 
                         <v-row class="ma-3">
                             <v-col cols="12" lg="4">
-                                <v-text-field label="Nome" variant="outlined" v-model="store.state.consulta.Paciente.nome"
-                                    disabled />
+                                <v-text-field label="Nome" variant="outlined"
+                                    v-model="store.state.consulta.Paciente.nome" disabled />
                             </v-col>
                             <v-col cols="12" lg="4">
                                 <v-text-field label="Vínculo" variant="outlined"
@@ -48,8 +50,9 @@
                                 <v-select label="Status" variant="outlined" v-model="store.state.consulta.status"
                                     :items="selectTipos" :disabled="ativarEdicao" />
                                 <v-text-field v-if="props.consulta.status === 'Confirmada'"
-                                    :type="ativarEdicao ? 'text' : 'datetime-local'" label="Data e Horário para a consulta"
-                                    v-model="store.state.consulta.data" variant="outlined" :disabled="ativarEdicao" />
+                                    :type="ativarEdicao ? 'text' : 'datetime-local'"
+                                    label="Data e Horário para a consulta" v-model="store.state.consulta.data"
+                                    variant="outlined" :disabled="ativarEdicao" />
                                 <v-text-field v-else type="datetime-local" variant="outlined"
                                     label="Data e Horário para a consulta" v-model="store.state.consulta.data"
                                     :disabled="ativarEdicao" />
@@ -75,9 +78,11 @@
                     <v-card-item>
                         <v-card-actions>
                             <v-spacer />
-                            <v-btn v-show="store.state.consulta.servico === 'Atendimento Psicológico' && psi === 'false'"
+                            <v-btn
+                                v-show="store.state.consulta.servico === 'Atendimento Psicológico' && psi === 'false'"
                                 text="Ver Respostas Confidências" @click="showDialogRespostas" variant="outlined" />
-                            <v-btn class="mr-5" text="Salvar" variant="tonal" @click="salvar" :disabled="ativarEdicao" />
+                            <v-btn class="mr-5" text="Salvar" variant="tonal" @click="salvar"
+                                :disabled="ativarEdicao" />
                             <v-btn @click="fechar" text="Fechar" variant="tonal" />
                         </v-card-actions>
                     </v-card-item>
@@ -98,8 +103,10 @@
                         <p>Curso: {{ store.state.resposta['Curso'] }}</p>
                         <p>Estudante de: {{ store.state.resposta['Estudante de'] }}</p>
                         <p>Motivos para o atendimento: {{ store.state.resposta['Motivos para o atendimento'] }}</p>
-                        <p>Se mudou para estudar na UFES? {{ store.state.resposta['Se mudou para estudar na UFES?'] }}</p>
-                        <p>com quem você reside em Alegre?? {{ store.state.resposta['com quem você reside em Alegre?'] }}
+                        <p>Se mudou para estudar na UFES? {{ store.state.resposta['Se mudou para estudar na UFES?'] }}
+                        </p>
+                        <p>com quem você reside em Alegre?? {{ store.state.resposta['com quem você reside em Alegre?']
+                            }}
                         </p>
                     </v-col>
                     <v-col cols="12">
@@ -173,15 +180,16 @@ import formatDate from '@/services/date';
 import { defineProps, onBeforeMount, ref } from 'vue';
 import { useStore } from 'vuex';
 import mensagemSucesso from '@/components/Mensagens/mensagemSucesso.vue'
-import mensagemSucessoExcluir from './Mensagens/mensagemSucessoExcluir.vue';
-import avisoDataObrigatoria from './Mensagens/avisoDataObrigatoria.vue';
+import mensagemSucessoExcluir from '@/components/Mensagens/mensagemSucessoExcluir.vue';
+import avisoDataObrigatoria from '@/components/Mensagens/avisoDataObrigatoria.vue';
 import gerarExcel from '@/components/gerarPlanilha.vue';
 
-let teste = true
+// let teste = true
 const psi = localStorage.getItem('psi')
 const props = defineProps({
     consulta: Object
 })
+const profissionais = ref([])
 
 //Variáveis e constantes
 const dialog = ref(false)
@@ -193,18 +201,26 @@ const nomeProfissional = ref('')
 nomeProfissional.value = props.consulta.Profissional ? props.consulta.Profissional.nome : 'Profissional Indefinido'
 const selectTipos = ref(['Confirmada', 'Cancelada'])
 
-
 let dataProps = props.consulta.data
+
+function getDataAtual() {
+    const data = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    return data;
+}
+
+
+
+const isSelectProfissional = !nomeProfissional.value ? true : false
+
+console.log(isSelectProfissional)
 
 
 function fecharDialogExcluir() {
     store.dispatch('setDialogExcluir', false)
-
 }
 function showDialogRespostas() {
     store.dispatch('resposta')
     showRespostas.value = true
-
 }
 function fecharRespostas() {
     showRespostas.value = false
@@ -217,14 +233,11 @@ async function excluirAgendamento() {
 
     } catch (error) {
         console.error(error)
-
     }
 }
 
 async function salvar() {
     let dataP = formatDate(dataProps)
-    console.log(store.state.consulta.data)
-    console.log(dataP)
     if (dataP === store.state.consulta.data) {
         store.dispatch('setAvisoDataObg', true)
         store.dispatch('setDataConsulta', '')
@@ -237,7 +250,7 @@ async function salvar() {
 
         try {
             await store.dispatch('getProfissionalById', nomeProfissional.value)
-            await store.dispatch('agendarConsulta');
+            await store.dispatch('agendarConsulta',);
             await store.dispatch('criarNotificacao', props.consulta.pacienteId)
             store.dispatch('IsMessage', true);
 
@@ -273,44 +286,33 @@ async function fechar() {
 }
 
 async function abrirDialogExcluir() {
-
     store.dispatch('setDialogExcluir', true)
 
-
-
 }
-const profissionais = ref([])
-
 
 async function abrirDialog() {
-    try {
-        await store.dispatch('getConsulta', props.consulta.id)
-        await store.dispatch('getProfissionais')
-        if (store.state.consulta.Profissional) {
-        } else {
-            console.log('Profissional indefinido')
-
-        }
-
-    } catch (error) {
-        console.error(error)
+    console.log('entrou aqui')
+    await store.dispatch('getConsulta', props.consulta.id)
+    await store.dispatch('getProfissionais')
+    if (store.state.consulta.Profissional) {
+    } else {
+        console.log('Profissional indefinido')
     }
-
-
-    profissionais.value = store.state.profissionais
+    profissionais.value = store.getters.profissionais
+    if (profissionais.value.message === 'Nenhuma profissional cadastrado no sistema') {
+        store.dispatch('setShowMsgSemProfi', true)
+    }
     dialog.value = !dialog.value
     console.log(profissionais.value)
 }
 
 function EnabledEdit() {
     ativarEdicao.value = !ativarEdicao.value
-
-
 }
 
-onBeforeMount(() => {
-    console.error('montando....')
+onBeforeMount(async () => {
 
+    console.error('montando....')
 
 })
 

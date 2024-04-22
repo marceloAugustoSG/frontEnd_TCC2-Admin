@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-layout>
-      <v-app-bar style="position: fixed;" color="primary">
+      <v-app-bar style="position: fixed;" color="primary" elevation="1">
         <v-app-bar-nav-icon style="margin: 0 10px ; " variant="text" @click.stop="isOpenSBar = !isOpenSBar" />
         <v-app-bar-title text="Painel Administrativo" />
 
@@ -15,9 +15,13 @@
           <v-menu>
             <template #activator="{ props }">
               <v-avatar v-bind="props" style="max-width: 30px; max-height: 30px">
-                <v-img cover src="https://icones.pro/wp-content/uploads/2022/07/icones-d-administration.png">
-                </v-img>
+                <v-btn>
+                  <v-icon size="25" v-bind="props" color="colorIcons" icon="mdi-account " />
+                </v-btn>
+                <!-- <v-img cover src="https://icones.pro/wp-content/uploads/2022/07/icones-d-administration.png">
+                </v-img> -->
               </v-avatar>
+
             </template>
             <v-card min-width="230px" class="mt-5">
               <v-list nav density="compact">
@@ -29,25 +33,27 @@
       </v-app-bar>
       <v-navigation-drawer style="position: fixed;" v-model="isOpenSBar" color="primary">
         <v-list>
-          <v-list-item to="/inicio" prepend-icon="mdi-home" title="Início" />
-          <v-list-item to="/consultas" prepend-icon="mdi-list-box-outline" title="Consultas" />
-          <v-list-item to="/teste" prepend-icon="mdi-list-box-outline" title="Teste" />
-          <v-list-group value="users">
-            <template #activator="{ props }">
-              <v-list-item v-bind="props" prepend-icon="mdi-account-group" title="Profissionais">
-              </v-list-item>
-            </template>
 
-            <v-list-item to="/cadastrarProfissional" prepend-icon="mdi-account-plus">
-              <v-list-item-title>Cadastrar</v-list-item-title>
-            </v-list-item>
+          <v-list-item to="/inicio">
+            <v-icon start color="colorIcons" icon="mdi-home" />
+            Início
+          </v-list-item>
 
-            <v-list-item to="/profissionais" prepend-icon="mdi-view-list">
-              <v-list-item-title>Listar</v-list-item-title>
-            </v-list-item>
 
-          </v-list-group>
-          <v-list-item to="/relatorios" prepend-icon="mdi-file-document-multiple" title="Relatórios" />
+          <v-list-item to="/consultas">
+            <v-icon start color="colorIcons" icon="mdi-list-box-outline" />
+            Agendamentos
+          </v-list-item>
+
+          <v-list-item to="/profissionais">
+            <v-icon start color="colorIcons" icon="mdi-account-group" />
+            Profissionais
+          </v-list-item>
+
+          <v-list-item to="/relatorios">
+            <v-icon start color="colorIcons" icon="mdi-chart-line" />
+            Relatórios
+          </v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main>

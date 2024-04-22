@@ -12,6 +12,7 @@ import enUS from 'date-fns/locale/en-US'
 const ligth = {
   dark: false,
   colors: {
+    colorIcons:'0F406F',
     background: "#d2d3db",
     card: "#0F406F",
     surface: "#EEE",
@@ -30,6 +31,7 @@ const ligth = {
 };
 const dark = {
   colors: {
+    colorIcons:'#2F99EE',
     background: "#333333",
     surface: "#333333",
     card: "#0F406F",

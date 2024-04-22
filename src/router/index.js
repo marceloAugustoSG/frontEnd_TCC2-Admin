@@ -5,7 +5,6 @@ const routes = [
     path: "/",
     redirect: "login",
   },
-
   {
     path: "/login",
     name: "login",
@@ -34,13 +33,7 @@ const routes = [
         component: () =>
           import("@/pages/dashboardAdmin/profissionais/listarProfissionais"),
       },
-      {
-        path: "/cadastrarProfissional",
-        component: () =>
-          import(
-            "@/pages/dashboardAdmin/profissionais/cadastrarProfissionais.vue"
-          ),
-      },
+
       {
         path: "/relatorios",
         component: () =>
@@ -48,12 +41,9 @@ const routes = [
       },
       {
         path: "/consultas",
-        component: () => import("@/pages/dashboardAdmin/Consultas.vue"),
+        component: () => import("@/pages/Consultas/Consultas.vue"),
       },
-      {
-        path: "/teste",
-        component: () => import("@/pages/testeConsultas/testeconsultas.vue"),
-      },
+    
 
       {
         path: "/configuracoes",
@@ -77,7 +67,7 @@ const routes = [
       },
       {
         path: "/consultasPsi",
-        component: () => import("@/pages/dashBoardPsi/Consultas.vue"),
+        component: () => import("@/pages/Consultas.vue"),
       },
     ],
   },

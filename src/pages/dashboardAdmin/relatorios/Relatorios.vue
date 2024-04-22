@@ -8,10 +8,12 @@
             <form>
               <v-row>
                 <v-col cols="3">
-                  <v-text-field density="comfortable" variant="outlined" v-model="dataInicio" type="date" label="Data de inicio" />
+                  <v-text-field density="comfortable" variant="outlined" v-model="dataInicio" type="date"
+                    label="Data de inicio" />
                 </v-col>
                 <v-col cols="3">
-                  <v-text-field density="comfortable" variant="outlined" v-model="dataFim" type="date" label="Data de fim" />
+                  <v-text-field density="comfortable" variant="outlined" v-model="dataFim" type="date"
+                    label="Data de fim" />
                 </v-col>
                 <v-col cols="3">
                   <v-select density="comfortable" variant="outlined" v-model="filtro" label="Serviço"
@@ -37,7 +39,7 @@
       </v-col>
     </v-row>
 
-    <v-dialog v-model="store.state.showRelatorio">
+    <v-dialog v-model="store.state.showRelatorio" persistent>
       <Relatorio />
 
     </v-dialog>
@@ -46,7 +48,7 @@
     <!-- Adicione a exibição do relatório ou uma tabela aqui -->
   </v-container>
 </template>
-  
+
 <script setup>
 import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
@@ -76,5 +78,3 @@ async function gerarRelatorio() {
 }
 
 </script>
-  
-  

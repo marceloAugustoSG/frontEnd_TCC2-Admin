@@ -2,7 +2,7 @@
     <v-container>
         <v-row>
             <v-col>
-                <v-card class=" mx-auto" style="width: auto;">
+                <v-card class=" mx-auto" style="width: 1200px;">
                     <v-table color="primary" fixed-header height="300px">
                         <thead>
                             <tr>

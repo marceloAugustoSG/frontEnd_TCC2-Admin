@@ -16,20 +16,15 @@
             <v-card>
               <v-card-item>
                 <form @submit.prevent="submit">
-                  <v-text-field prepend-inner-icon="mdi-email" v-model="usuario.email" :rules="emailRules" label="E-mail"
-                    required />
-                  <v-text-field prepend-inner-icon="mdi-form-textbox-password" v-model="usuario.password"
-                    :append-inner-icon="showpassword ? 'mdi-eye' : 'mdi-eye-off'
+                  <v-text-field prepend-inner-icon="mdi-email" variant="outlined" v-model="usuario.email"
+                    :rules="emailRules" label="E-mail" required />
+                  <v-text-field prepend-inner-icon="mdi-form-textbox-password" variant="outlined"
+                    v-model="usuario.password" :append-inner-icon="showpassword ? 'mdi-eye' : 'mdi-eye-off'
                       " :type="showpassword ? 'text' : 'password'" @click:append-inner="showpassword = !showpassword"
                     label="Senha" required />
                   <v-row class="pb-5">
-                    <!-- <v-col>
-                      <v-btn prepend-icon="mdi-account-plus" to="/criarConta" color="secundary" class="w-100">Criar
-                        Conta</v-btn>
-                    </v-col> -->
                     <v-col>
-                      <v-btn type="submit" class="w-100" text="Entrar" prepend-icon="mdi-login"
-                        color="primary">Entrar</v-btn>
+                      <v-btn type="submit" class="w-100" text="Entrar" prepend-icon="mdi-login" color="primary" />
                     </v-col>
                   </v-row>
                 </form>

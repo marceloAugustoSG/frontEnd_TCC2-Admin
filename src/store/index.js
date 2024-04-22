@@ -35,9 +35,21 @@ const store = createStore({
     consultas: [],
     profissionais: [],
     mensagem: "",
+
+    //contraladores de tela
     isMessageSucesso: false,
     isMessageSucessoExcluir: false,
     isMessageExcluir: false,
+    isPsi: Boolean,
+    dialogExcluir: false,
+    showRelatorio: false,
+    showAvisoDataObg: false,
+    showMsgSemProfi: false,
+    showMNewProf: false,
+    showMEditProf: false,
+    showMDeletarProf: false,
+    msgSaveProf: false,
+
     resposta: {
       Centro: String,
       Curso: String,
@@ -69,23 +81,39 @@ const store = createStore({
       },
     },
 
-    isPsi: Boolean,
     consultasFiltradas: [],
     profissional: {
       nome: "",
       especialidade: "",
     },
-
+    //relatorio
     dataIni: Date,
     dataFim: Date,
     filtro: String,
     status: String,
     message: "",
-    dialogExcluir: false,
-    showRelatorio: false,
-    showAvisoDataObg: false,
   },
+
   mutations: {
+    //controladores de tela
+
+    SetShowMDeletarProf(state, payload) {
+      state.showMDeletarProf = payload;
+    },
+    SetShowMEditProf(state, payload) {
+      state.showMEditProf = payload;
+    },
+
+    SetMsgSaveProf(state, payload) {
+      state.msgSaveProf = payload;
+    },
+
+    setShowMNewProf(state, payload) {
+      state.showMNewProf = payload;
+    },
+    setShowMsgSemProfi(state, payload) {
+      state.showMsgSemProfi = payload;
+    },
     setMensagemSucessoExcluir(state, payload) {
       state.isMessageSucessoExcluir = payload;
     },
@@ -95,15 +123,21 @@ const store = createStore({
     setShowRelatorio(state, payload) {
       state.showRelatorio = payload;
     },
-
-    setDataConsulta(state, payload) {
-      state.consulta.data = payload;
-    },
-
     setDialogExcluir(state, payload) {
       state.dialogExcluir = payload;
     },
 
+    setIsMessageExcluir(state, payload) {
+      state.isMessageExcluir = payload;
+    },
+    setIsMessage(state, payload) {
+      state.isMessageSucesso = payload;
+    },
+
+    //modificadores
+    setDataConsulta(state, payload) {
+      state.consulta.data = payload;
+    },
     setMessage(state, newMessage) {
       state.message = newMessage;
     },
@@ -134,12 +168,6 @@ const store = createStore({
       state.profissionais = payload;
     },
 
-    setIsMessageExcluir(state, payload) {
-      state.isMessageExcluir = payload;
-    },
-    setIsMessage(state, payload) {
-      state.isMessageSucesso = payload;
-    },
     setConsulta(state, payload) {
       state.consulta = payload;
     },
@@ -156,7 +184,24 @@ const store = createStore({
   },
 
   getters: {
+    consultasAsc: (state) => {
+      const consultasOrdenadasAsc = [...state.consultas];
+      function ordenanarAsc(a, b) {
+        return a.data_solicitacao - b.data_solicitacao;
+      }
+      consultasOrdenadasAsc.sort(ordenanarAsc);
+      return consultasOrdenadasAsc;
+    },
+    consultasDesc: (state) => {
+      const consultasOrdenadasDesc = [...state.consultas];
+      function ordenanarDesc(a, b) {
+        return b.data_solicitacao - a.data_solicitacao;
+      }
+      consultasOrdenadasDesc.sort(ordenanarDesc);
+      return consultasOrdenadasDesc;
+    },
     consultas: (state) => state.consultas,
+    profissionais: (state) => state.profissionais,
     consultasFiltradas: (state) => state.consultasFiltradas,
     consultasAtendimentoPsicologico: (state) =>
       state.consultas.filter(
@@ -174,22 +219,36 @@ const store = createStore({
           consulta.status !== "Solicitada" ||
           consulta.servico !== "Atendimento Psicológico"
       ),
-    profissionais: (state) =>
-      state.profissionais.map((profissional) => ({
-        id: profissional.id,
-        nome: `${profissional.nome} (${profissional.especialidade})`,
-        especialidade: profissional.especialidade,
-      })),
+    // profissionais: (state) =>
+    //   state.profissionais.map((profissional) => ({
+    //     id: profissional.id,
+    //     nome: `${profissional.nome} (${profissional.especialidade})`,
+    //     especialidade: profissional.especialidade,
+    //   })),
   },
   actions: {
+    //controladores de tela
+    setShowMDeletarProf({ commit }, valor) {
+      commit("SetShowMDeletarProf", valor);
+    },
+
+    setShowMEditProf({ commit }, valor) {
+      commit("SetShowMEditProf", valor);
+    },
+    setShowMNewProf({ commit }, valor) {
+      commit("setShowMNewProf", valor);
+      console.log(this.state.showMNewProf);
+    },
+    setShowMsgSemProfi({ commit }, valor) {
+      commit("setShowMsgSemProfi", valor);
+    },
     setMensagemSucessoExcluir({ commit }, valor) {
       commit("setMensagemSucessoExcluir", valor);
     },
-
-    setConsulta({ commit, dispatch }, valor) {
-      commit("setConsulta", valor);
+    setDialogExcluir({ commit }, valor) {
+      console.log("alodfsd");
+      commit("setDialogExcluir", valor);
     },
-
     setAvisoDataObg({ commit }, valor) {
       commit("setAvisoDataObg", valor);
     },
@@ -197,13 +256,12 @@ const store = createStore({
       commit("setShowRelatorio", valor);
     },
 
-    setDataConsulta({ commit }, valor) {
-      commit("setDataConsulta", valor);
+    setConsulta({ commit, dispatch }, valor) {
+      commit("setConsulta", valor);
     },
 
-    setDialogExcluir({ commit }, valor) {
-      console.log("alodfsd");
-      commit("setDialogExcluir", valor);
+    setDataConsulta({ commit }, valor) {
+      commit("setDataConsulta", valor);
     },
 
     setStatus({ commit }, status) {
@@ -227,7 +285,7 @@ const store = createStore({
       try {
         const consultas = this.getters.consultas;
 
-        // Defina as datas de início e fim (você pode ajustar conforme necessário)
+        // Defina as datas de início e fim
         const dataInicio = new Date(this.state.dataIni);
         const dataFim = new Date(this.state.dataFim);
         const filtro = this.state.filtro;
@@ -278,19 +336,21 @@ const store = createStore({
         const resposta = await http.post("profissional", dados);
         const data = await resposta.data;
         console.log(data);
+        setInterval(() => {
+          commit("SetMsgSaveProf", true);
+        }, 500);
       } catch (error) {
         console.error(error);
       }
     },
 
     async getProfissionais({ commit }) {
-      try {
-        const resposta = await http.get("profissionais");
-        commit("setProfissionais", resposta.data);
-        console.log(resposta.data);
-      } catch (error) {
-        console.error(error);
-      }
+      const resposta = await http.get("profissionais");
+      commit("setProfissionais", resposta.data);
+      if (this.state.profissionais.length === 0) {
+        commit("setShowMsgSemProfi", true);
+        console.log(this.state.showMsgSemProfi);
+      } else console.log(resposta.data);
     },
 
     async getProfissionalById({ commit }, idProfissional) {
@@ -304,6 +364,11 @@ const store = createStore({
       } catch (error) {
         console.error(error);
       }
+    },
+
+    async excluirProfissional({ commit }, id) {
+      const idProf = Number(id);
+      await http.delete(`profissional/${idProf}`);
     },
 
     IsMessage({ commit }, valor) {
@@ -390,7 +455,7 @@ const store = createStore({
           atob(resposta.data.token.split(".")[1])
         ); // Decodifica a parte do payload
         console.log(tokenDecodificado);
-        console.error(data);
+        console.log(data.token);
 
         if (tokenDecodificado.regra === "psicologo") {
           commit("setPsi", false);
@@ -411,6 +476,8 @@ const store = createStore({
           commit("setPsi", true);
 
           localStorage.setItem("psi", true);
+          localStorage.setItem("token", data.token);
+
           console.log(this.state.isPsi);
           commit("setMessage", "");
 
@@ -424,7 +491,7 @@ const store = createStore({
       try {
         const resposta = await http.get("profissionais");
         const data = await resposta.data;
-        console.log(data.data);
+        console.log(data);
         commit("setProfissionais", data);
       } catch (e) {
         console.log(e);
@@ -437,6 +504,7 @@ const store = createStore({
         const data = await resposta.data;
         console.log(data);
         commit("setConsultas", data);
+        console.log(this.state.consultas.totalConsultas);
       } catch (error) {
         console.error(error);
       }
