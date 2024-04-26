@@ -8,7 +8,7 @@
             <v-btn text="Não" variant="tonal" @click="fecharDialogExcluir" />
         </v-card-actions>
         <p>{{ props.consulta.id }}</p>
-        <v-dialog v-model="store.state.isMessageExcluir">
+        <v-dialog v-model="store.state.controladoresTela.isMessageExcluir">
             <mensagemSucesso mensagem="Agendamento Excluido com sucesso!" />
         </v-dialog>
     </v-card>

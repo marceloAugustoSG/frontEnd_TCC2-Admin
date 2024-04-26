@@ -39,7 +39,7 @@
       </v-col>
     </v-row>
 
-    <v-dialog v-model="store.state.showRelatorio" persistent>
+    <v-dialog v-model="store.state.controladoresTela.showRelatorio" persistent>
       <Relatorio />
 
     </v-dialog>

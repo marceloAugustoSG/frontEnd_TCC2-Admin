@@ -28,7 +28,7 @@
             <v-alert type="warning">Nenhum resultado encontrado</v-alert>
         </v-container>
 
-        <v-container class="pr-5" v-else-if="consultas.totalConsultas === 0">
+        <v-container class="pr-5" v-else-if="totalConsultas === 0">
             <v-alert type="warning">Nenhuma consulta registrada no sistema</v-alert>
         </v-container>
 
@@ -48,10 +48,10 @@
                                 </strong>{{ consulta.data ? formatDate(consulta.data) : 'Data não definida' }}</p>
                             <p class="mb-5"><strong>Data de Solicitação: </strong>{{
                                 formatDate(consulta.data_solicitacao) }}</p>
-                            <p
-                                :class="{ 'text-orange': consulta.status === 'Solicitada', 'text-green': consulta.status === 'Confirmada', 'text-red': consulta.status === 'Cancelada' }">
-                                <strong>Status: </strong>{{ consulta.status }}
-                            </p>
+
+                            <v-chip :color="getChipColor(consulta.status)">
+                                {{ consulta.status }}
+                            </v-chip>
                         </div>
                     </v-sheet>
                 </v-col>
@@ -68,10 +68,13 @@ import formatDate from '@/services/date'
 
 const store = useStore()
 
+const totalConsultas = computed(() => {
+    consultas.value.totalConsultas
+})
 const ordenacoes = ref(['Status', 'Paciente', 'Serviço'])
 const ordenar = ref()
 let search = ref('')
-const consultas = computed(() => store.state.consultas)
+const consultas = ref([])
 
 function ordenarAsc() {
     const asc = [...consultas.value]
@@ -87,17 +90,33 @@ function ordenarDesc() {
     atualizarFiltragem();
 }
 
-const profissionais = ref([])
+const profissionais = computed(() => {
+    store.state.profissionais.profissionais
+})
 
 const refresh = async () => {
     await store.dispatch('listarConsultas');
 }
 
+function getChipColor(status) {
+    switch (status) {
+        case 'Solicitada':
+            return 'orange';
+        case 'Confirmada':
+            return 'green';
+        case 'Cancelada':
+            return 'red';
+        default:
+            return '';
+    }
+}
+
+
 onBeforeMount(async () => {
     try {
-        await store.dispatch('listarConsultas');
         await store.dispatch('listarProfissionais');
-        profissionais.value = store.state.profissionais;
+        consultas.value = store.state.agendamento.consultas
+        await store.dispatch('listarConsultas');
     } catch (error) {
         console.error('Erro ao carregar dados:', error);
     }

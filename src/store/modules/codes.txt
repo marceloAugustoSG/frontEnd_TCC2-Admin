@@ -1,0 +1,7 @@
+   // login 
+   
+   setPsi(state, payload) {
+      state.isPsi = payload;
+    },
+
+

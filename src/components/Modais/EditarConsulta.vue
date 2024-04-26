@@ -20,19 +20,19 @@
                         <v-row class="ma-3">
                             <v-col cols="12" lg="4">
                                 <v-text-field label="Nome" variant="outlined"
-                                    v-model="store.state.consulta.Paciente.nome" disabled />
+                                    v-model="store.state.agendamento.consulta.Paciente.nome" disabled />
                             </v-col>
                             <v-col cols="12" lg="4">
                                 <v-text-field label="Vínculo" variant="outlined"
-                                    v-model="store.state.consulta.Paciente.tipo" disabled />
+                                    v-model="store.state.agendamento.consulta.Paciente.tipo" disabled />
                             </v-col>
                             <v-col cols="12" lg="4">
                                 <v-text-field label="Matricula" variant="outlined"
-                                    v-model="store.state.consulta.Paciente.matricula" disabled />
+                                    v-model="store.state.agendamento.consulta.Paciente.matricula" disabled />
                             </v-col>
                             <v-col cols="12" lg="4">
                                 <v-text-field label="Telefone" variant="outlined"
-                                    v-model="store.state.consulta.Paciente.telefone" disabled />
+                                    v-model="store.state.agendamento.consulta.Paciente.telefone" disabled />
                             </v-col>
                         </v-row>
                     </v-sheet>
@@ -41,21 +41,24 @@
                         <h3 class="ml-5"> Informações da Consulta</h3>
                         <v-row class="ma-3">
                             <v-col cols="12" lg="4">
-                                <v-text-field label="Serviço" variant="outlined" v-model="store.state.consulta.servico"
-                                    disabled />
+                                <v-text-field label="Serviço" variant="outlined"
+                                    v-model="store.state.agendamento.consulta.servico" disabled />
                                 <v-textarea rows="1" label="Observação" variant="outlined"
-                                    v-model="store.state.consulta.observacao" :items="selectTipos" disabled />
+                                    v-model="store.state.agendamento.consulta.observacao" :items="selectTipos"
+                                    disabled />
                             </v-col>
                             <v-col cols="12" lg="4">
-                                <v-select label="Status" variant="outlined" v-model="store.state.consulta.status"
-                                    :items="selectTipos" :disabled="ativarEdicao" />
+                                <v-select label="Status" variant="outlined"
+                                    v-model="store.state.agendamento.consulta.status" :items="selectTipos"
+                                    :disabled="ativarEdicao" />
                                 <v-text-field v-if="props.consulta.status === 'Confirmada'"
                                     :type="ativarEdicao ? 'text' : 'datetime-local'"
-                                    label="Data e Horário para a consulta" v-model="store.state.consulta.data"
-                                    variant="outlined" :disabled="ativarEdicao" />
-                                <v-text-field v-else type="datetime-local" variant="outlined"
-                                    label="Data e Horário para a consulta" v-model="store.state.consulta.data"
+                                    label="Data e Horário para a consulta"
+                                    v-model="store.state.agendamento.consulta.data" variant="outlined"
                                     :disabled="ativarEdicao" />
+                                <v-text-field v-else type="datetime-local" variant="outlined"
+                                    label="Data e Horário para a consulta"
+                                    v-model="store.state.agendamento.consulta.data" :disabled="ativarEdicao" />
 
                             </v-col>
                             <v-col cols="12" lg="4">
@@ -63,7 +66,7 @@
                                     :items="store.getters.profissionais" :item-value="profissional => profissional.id"
                                     :item-title="profissional => profissional.nome" :disabled="ativarEdicao" />
                                 <v-text-field label="Data de Solicitação" variant="outlined"
-                                    v-model="store.state.consulta.data_solicitacao" disabled />
+                                    v-model="store.state.agendamento.consulta.data_solicitacao" disabled />
                             </v-col>
 
                             <v-col cols="12" lg="4">
@@ -79,7 +82,7 @@
                         <v-card-actions>
                             <v-spacer />
                             <v-btn
-                                v-show="store.state.consulta.servico === 'Atendimento Psicológico' && psi === 'false'"
+                                v-show="store.state.agendamento.consulta.servico === 'Atendimento Psicológico' && psi === 'false'"
                                 text="Ver Respostas Confidências" @click="showDialogRespostas" variant="outlined" />
                             <v-btn class="mr-5" text="Salvar" variant="tonal" @click="salvar"
                                 :disabled="ativarEdicao" />
@@ -89,12 +92,12 @@
                 </form>
             </v-sheet>
         </v-dialog>
-        <v-dialog v-model="store.state.isMessageSucesso">
+        <v-dialog v-model="store.state.controladoresTela.showMsgSucessoAgendamento">
             <mensagemSucesso :mensagem="mensagem" />
         </v-dialog>
     </v-container>
 
-    <v-dialog v-model="showRespostas">
+    <v-dialog v-model="showRespostas" persistent>
         <v-card>
             <v-toolbar title="Respostas Confidências" />
             <v-card-item class="ma-5">
@@ -150,7 +153,7 @@
         <v-btn icon="mdi-eye" @click="abrirDialog" />
     </div>
 
-    <v-dialog v-model="store.state.dialogExcluir">
+    <v-dialog v-model="store.state.controladoresTela.dialogExcluir" persistent>
         <v-card class=" mx-auto" style="width: 300px;">
             <v-toolbar title="Aviso" color="primary" />
             <v-card-text style="text-align: justify;">Tem certeza que deseja excluir esse agendamento?</v-card-text>
@@ -160,17 +163,17 @@
                 <v-btn text="Não" variant="tonal" @click="fecharDialogExcluir" />
             </v-card-actions>
             <p>{{ props.consulta.id }}</p>
-            <v-dialog v-model="store.state.isMessageSucesso">
+            <v-dialog v-model="store.state.controladoresTela.isMessageSucesso" persistent>
                 <mensagemSucesso />
             </v-dialog>
 
-            <v-dialog v-model="store.state.isMessageExcluir">
+            <v-dialog v-model="store.state.controladoresTela.isMessageExcluir" persistent>
                 <mensagemSucessoExcluir />
             </v-dialog>
 
         </v-card>
     </v-dialog>
-    <v-dialog v-model="store.state.showAvisoDataObg">
+    <v-dialog v-model="store.state.controladoresTela.showAvisoDataObg" persistent>
         <avisoDataObrigatoria />
     </v-dialog>
 </template>
@@ -238,28 +241,28 @@ async function excluirAgendamento() {
 
 async function salvar() {
     let dataP = formatDate(dataProps)
-    if (dataP === store.state.consulta.data) {
+    if (dataP === store.state.agendamento.consulta.data) {
         store.dispatch('setAvisoDataObg', true)
         store.dispatch('setDataConsulta', '')
         console.log('datas iguais')
         dataP = ''
-        store.dispatch('IsMessage', false);
+        store.dispatch('setIsMsgSAgendamento', false);
 
     } else {
-        store.state.consulta.profissionalId = nomeProfissional.value
+        store.state.agendamento.consulta.profissionalId = nomeProfissional.value
 
         try {
             await store.dispatch('getProfissionalById', nomeProfissional.value)
             await store.dispatch('agendarConsulta',);
-            await store.dispatch('criarNotificacao', props.consulta.pacienteId)
-            store.dispatch('IsMessage', true);
+            // await store.dispatch('criarNotificacao', props.consulta.pacienteId)
+            store.dispatch('setIsMsgSAgendamento', true);
 
         } catch (error) {
             console.error(error);
         }
 
         store.dispatch('listarConsultas');
-        console.log(store.state.consulta.data)
+        console.log(store.state.agendamento.consulta.data)
 
 
         setTimeout(() => {
@@ -281,7 +284,7 @@ async function fechar() {
     } catch (error) {
         console.error(error)
     }
-    console.log(props.consulta.Profissional)
+    console.log(props.consulta.Profissional.especialidade)
 
 }
 
@@ -294,7 +297,7 @@ async function abrirDialog() {
     console.log('entrou aqui')
     await store.dispatch('getConsulta', props.consulta.id)
     await store.dispatch('getProfissionais')
-    if (store.state.consulta.Profissional) {
+    if (store.state.profissionais.profissional) {
     } else {
         console.log('Profissional indefinido')
     }

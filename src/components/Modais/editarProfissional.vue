@@ -7,22 +7,22 @@
             <form @submit.prevent="submit">
                 <v-row>
                     <v-col cols="12" lg="6">
-                        <v-text-field v-model="store.state.profissional.nome" label="Nome" variant="outlined"
-                            required />
+                        <v-text-field v-model="store.state.profissionais.profissional.nome" label="Nome"
+                            variant="outlined" required />
                     </v-col>
                     <v-col cols="12" lg="6">
-                        <v-select v-model="store.state.profissional.especialidade" :items="['Medico', 'Psicólogo']"
-                            label="Especialidade" variant="outlined" required />
+                        <v-select v-model="store.state.profissionais.profissional.especialidade"
+                            :items="['Medico', 'Psicólogo']" label="Especialidade" variant="outlined" required />
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col cols="12" lg="6">
-                        <v-text-field v-model="store.state.profissional.email" label="E-mail" variant="outlined"
-                            required />
+                        <v-text-field v-model="store.state.profissionais.profissional.email" label="E-mail"
+                            variant="outlined" required />
                     </v-col>
                     <v-col cols="12" lg="6">
-                        <v-text-field v-model="store.state.profissional.telefone" label="Telefone" variant="outlined"
-                            required />
+                        <v-text-field v-model="store.state.profissionais.profissional.telefone" label="Telefone"
+                            variant="outlined" required />
                     </v-col>
                 </v-row>
             </form>
@@ -52,8 +52,9 @@ const editProfissional = ref({
 
 
 async function submit() {
+    store.dispatch('setShowModalSucesso', true)
+    console.log(store.state.showModelSucesso)
 
-    // store.dispatch('criarProfissional', novoProfissional.value)
     console.log(novoProfissional.value)
 }
 

@@ -25,8 +25,8 @@ const props = defineProps({
 
 const store = useStore()
 function confirmar() {
-    store.dispatch('excluirProfissional', store.state.profissional.id)
-    console.log(store.state.profissional.id)
+    store.dispatch('excluirProfissional', store.state.profissionais.profissional.id)
+    console.log(store.state.profissionais.profissional.id)
     window.location.reload();
     store.dispatch('setShowMDeletarProf', false)
 }

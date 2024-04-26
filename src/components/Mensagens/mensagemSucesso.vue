@@ -12,7 +12,7 @@
 
         <p class="mb-4 text-medium-emphasis text-body-2" >
 
-            Uma mensagem de confirmação será enviada para o Paciente {{ store.state.consulta.Paciente.nome }}</p>
+            Uma mensagem de confirmação será enviada para o Paciente {{ store.state.agendamento.consulta.Paciente.nome }}</p>
 
         <v-divider class="mb-4"></v-divider>
 
@@ -36,10 +36,9 @@ const props = defineProps({
 
 const store = useStore()
 function fechar() {
-    store.dispatch('IsMessage', false)
-    setTimeout(() => {
-        window.location.reload();
-    }, 50); // 4000 milissegundos = 4 segundos
+    store.dispatch('setIsMsgSAgendamento', false)
+    window.location.reload();
+  
 
 }
 </script>

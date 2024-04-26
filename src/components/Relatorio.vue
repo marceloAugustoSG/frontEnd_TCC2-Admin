@@ -41,7 +41,7 @@
         </v-row>
     </v-container>
 </template>
-  
+
 <script setup>
 import { computed } from 'vue';
 import jsPDF from 'jspdf';
@@ -86,7 +86,7 @@ const gerarPDF = () => {
     doc.save('relatorio_consultas.pdf');
 };
 </script>
-  
+
 <style scoped>
 .table {
     width: 100%;
@@ -105,4 +105,3 @@ const gerarPDF = () => {
     background-color: #f2f2f2;
 }
 </style>
-  

@@ -62,7 +62,9 @@ const emailRules = ref([
 async function submit() {
 
   await store.dispatch('logar', usuario).then(() => {
-    const message = store.state.message
+    const message = store.state.loginLogout.message
+
+    console.log(store)
     message ? alertMessage.value = true : alertMessage.value = false
     router.push({ name: 'dashboard' })
   }).catch((e) => {
@@ -70,16 +72,10 @@ async function submit() {
   })
 }
 
-onBeforeMount(() => {
-  try {
-    store.dispatch('init')
 
-  } catch (error) {
-    console.error(error)
-
-  }
-
-})
+onBeforeMount(async () => {
+  await store.dispatch('init');
+});
 
 
 </script>
