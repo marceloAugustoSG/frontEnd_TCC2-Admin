@@ -3,13 +3,15 @@
         <v-sheet dark rounded>
             <v-row class="pa-5">
                 <v-col cols="12" lg="3">
-                    <v-select label="Pesquisar por..." variant="outlined" v-model="ordenar" :items="ordenacoes"
-                        prepend-inner-icon="mdi-sort" @change="atualizarFiltragem" density="comfortable" />
+                    <v-select label="Pesquisar por..." variant="outlined" v-model="store.state.agendamento.ordenar"
+                        :items="ordenacoes" prepend-inner-icon="mdi-sort" @update:model-value="atualizarFiltragem"
+                        density="comfortable" />
                 </v-col>
                 <v-col cols="12" lg="5">
-                    <v-text-field variant="outlined" v-model="search" placeholder="Pesquisar" clearable
+                    <v-text-field variant="outlined" v-model="store.state.agendamento.search" placeholder="Pesquisar"
                         :type="ordenar === 'Data da Consulta' || ordenar === 'Data de Solicitação' ? 'date' : 'text'"
-                        prepend-inner-icon="mdi-magnify" density="comfortable" />
+                        prepend-inner-icon="mdi-magnify" density="comfortable"
+                        @update:model-value="atualizarFiltragem" />
                 </v-col>
 
                 <v-col cols="12" lg="4">
@@ -24,17 +26,20 @@
             </v-row>
         </v-sheet>
 
-        <v-container class="pr-5" v-if="filteredItems.length === 0">
+        <v-container class="pr-5" v-if="store.getters.consultasFiltradas.length === 0">
             <v-alert type="warning">Nenhum resultado encontrado</v-alert>
         </v-container>
 
-        <v-container class="pr-5" v-else-if="totalConsultas === 0">
+        <v-container class="pr-5" v-else-if="store.getters.consultas.length === 0">
             <v-alert type="warning">Nenhuma consulta registrada no sistema</v-alert>
         </v-container>
 
-        <v-container v-else fluid>
+        <v-container class="pr-5" v-if="store.state.agendamento.consultas.length === 0">
+            <v-alert type="warning">Nenhuma consulta registrada no sistema</v-alert>
+        </v-container>
+        <v-container fluid>
             <v-row>
-                <v-col cols="12" lg="4" v-for="consulta in filteredItems" :key="consulta.id">
+                <v-col cols="12" lg="4" v-for="consulta in store.getters.consultasFiltradas" :key="consulta.id">
                     <v-sheet elevation="3" border rounded>
                         <v-toolbar :title="consulta.servico">
                             <div style="display: flex;" class="mr-2">
@@ -49,7 +54,7 @@
                             <p class="mb-5"><strong>Data de Solicitação: </strong>{{
                                 formatDate(consulta.data_solicitacao) }}</p>
 
-                            <v-chip :color="getChipColor(consulta.status)">
+                            <v-chip :color="getChipColor(consulta.status)" elevation="3">
                                 {{ consulta.status }}
                             </v-chip>
                         </div>
@@ -61,38 +66,30 @@
 </template>
 
 <script setup>
-import { computed, onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import EditarConsulta from '@/components/Modais/EditarConsulta.vue';
 import formatDate from '@/services/date'
 
 const store = useStore()
 
-const totalConsultas = computed(() => {
-    consultas.value.totalConsultas
-})
+
 const ordenacoes = ref(['Status', 'Paciente', 'Serviço'])
 const ordenar = ref()
-let search = ref('')
-const consultas = ref([])
 
 function ordenarAsc() {
-    const asc = [...consultas.value]
-    asc.sort((a, b) => new Date(a.data_solicitacao) - new Date(b.data_solicitacao));
-    consultas.value = asc
-    atualizarFiltragem();
+    store.dispatch('setSearch', 0)
+    console.log(store.state.agendamento.ord)
+    console.log(store.getters.consultasFiltradas)
 }
 
 function ordenarDesc() {
-    const desc = [...consultas.value];
-    desc.sort((a, b) => new Date(b.data_solicitacao) - new Date(a.data_solicitacao));
-    consultas.value = desc
-    atualizarFiltragem();
+    store.dispatch('setSearch', 1)
+    console.log(store.state.agendamento.ord)
+    console.log(store.getters.consultasFiltradas)
 }
 
-const profissionais = computed(() => {
-    store.state.profissionais.profissionais
-})
+
 
 const refresh = async () => {
     await store.dispatch('listarConsultas');
@@ -115,48 +112,26 @@ function getChipColor(status) {
 onBeforeMount(async () => {
     try {
         await store.dispatch('listarProfissionais');
-        consultas.value = store.state.agendamento.consultas
         await store.dispatch('listarConsultas');
     } catch (error) {
         console.error('Erro ao carregar dados:', error);
     }
 });
 
-const filteredItems = computed(() => {
-    const term = search.value ? search.value.toLowerCase() : '';
-    switch (ordenar.value) {
-        case 'Status': {
-            return consultas.value.filter(consulta => consulta.status.toLowerCase().includes(term));
-        }
-        case 'Serviço': {
-            return consultas.value.filter(consulta => consulta.servico.toLowerCase().includes(term));
-        }
-        case 'Paciente': {
-            return consultas.value.filter(consulta => consulta.Paciente.nome.toLowerCase().includes(term));
-        }
-        default:
-            return consultas.value.filter(consulta => consulta.status.toLowerCase().includes(term));
-    }
-});
+
+
+
 
 function atualizarFiltragem() {
-    const term = search.value ? search.value.toLowerCase() : '';
-    switch (ordenar.value) {
+    console.log(store.state.agendamento.search)
+    switch (store.state.agendamento.ordenar) {
         case 'Status': {
-            filteredItems.value = consultas.value.filter(consulta => consulta.status.toLowerCase().includes(term));
-            break;
+            console.log(store.getters.consultasFiltradas)
         }
-        case 'Serviço': {
-            filteredItems.value = consultas.value.filter(consulta => consulta.servico.toLowerCase().includes(term));
-            break;
-        }
-        case 'Paciente': {
-            filteredItems.value = consultas.value.filter(consulta => consulta.Paciente.nome.toLowerCase().includes(term));
-            break;
-        }
-        default:
-            filteredItems.value = consultas.value.filter(consulta => consulta.status.toLowerCase().includes(term));
     }
+
+
+
 }
 
 function pMaiuscula(titulo) {

@@ -39,7 +39,7 @@ const profissionaisModule = {
         const resposta = await http.get("profissionais");
         const data = await resposta.data;
         console.log(data);
-        commit("setProfissionais", data);
+        commit("setProfissionais", data.profissionais);
       } catch (e) {
         console.log(e);
       }
@@ -47,7 +47,8 @@ const profissionaisModule = {
 
     async getProfissionais({ commit }) {
       const resposta = await http.get("profissionais");
-      commit("setProfissionais", resposta.data);
+      console.log(resposta.data.profissionais);
+      commit("setProfissionais", resposta.data.profissionais);
       if (this.state.profissionais.length === 0) {
         commit("setShowMsgSemProfi", true);
         console.log(this.state.showMsgSemProfi);

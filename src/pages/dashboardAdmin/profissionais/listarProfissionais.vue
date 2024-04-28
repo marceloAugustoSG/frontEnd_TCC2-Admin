@@ -1,7 +1,6 @@
 <template>
     <v-container>
         <v-dialog v-model="store.state.controladoresTela.showMDeletarProf" max-width="600px" persistent>
-            deletar Profissioanal
             <msgDeletarProfissional />
         </v-dialog>
 

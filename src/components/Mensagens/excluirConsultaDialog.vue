@@ -4,7 +4,7 @@
         <v-card-text style="text-align: justify;">Tem certeza que deseja excluir esse agendamento?</v-card-text>
         <v-card-actions>
             <v-spacer />
-            <v-btn text="Sim" variant="tonal" @click="excluirAgendamento" />
+            <v-btn text="Sim" variant="tonal" @click="excluirAgendamento(props.consulta.id)" />
             <v-btn text="Não" variant="tonal" @click="fecharDialogExcluir" />
         </v-card-actions>
         <p>{{ props.consulta.id }}</p>
@@ -22,9 +22,9 @@ const props = defineProps({
 })
 const store = useStore()
 
-function excluirAgendamento(idConsulta){
+function excluirAgendamento(idConsulta) {
 
-    store.dispatch('excluirConsulta',idConsulta)
+    store.dispatch('excluirConsulta', idConsulta)
 }
 store.dispatch('setDialogExcluir', true)
 

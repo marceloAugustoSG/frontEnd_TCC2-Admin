@@ -19,8 +19,10 @@
 
                         <v-row class="ma-3">
                             <v-col cols="12" lg="4">
-                                <v-text-field label="Nome" variant="outlined"
-                                    v-model="store.state.agendamento.consulta.Paciente.nome" disabled />
+                                <!-- <v-text-field label="Nome" variant="outlined"
+                                    v-model="store.state.agendamento.consulta.Paciente.nome" disabled /> -->
+                                <v-text-field label="Nome" variant="outlined" v-model="props.consulta.Paciente.nome"
+                                    disabled />
                             </v-col>
                             <v-col cols="12" lg="4">
                                 <v-text-field label="Vínculo" variant="outlined"
@@ -49,8 +51,9 @@
                             </v-col>
                             <v-col cols="12" lg="4">
                                 <v-select label="Status" variant="outlined"
-                                    v-model="store.state.agendamento.consulta.status" :items="selectTipos"
-                                    :disabled="ativarEdicao" />
+                                    v-model="store.state.agendamento.consulta.status" :items="selectTipos" item-value=""
+                                    :disabled="ativarEdicao" :item-title="item"
+                                    @update:model-value="habilitarCampoData(store.state.agendamento.consulta.status)" />
                                 <v-text-field v-if="props.consulta.status === 'Confirmada'"
                                     :type="ativarEdicao ? 'text' : 'datetime-local'"
                                     label="Data e Horário para a consulta"
@@ -58,13 +61,14 @@
                                     :disabled="ativarEdicao" />
                                 <v-text-field v-else type="datetime-local" variant="outlined"
                                     label="Data e Horário para a consulta"
-                                    v-model="store.state.agendamento.consulta.data" :disabled="ativarEdicao" />
+                                    v-model="store.state.agendamento.consulta.data" :disabled="habilitarCData" />
 
                             </v-col>
                             <v-col cols="12" lg="4">
-                                <v-select label="Profissional" variant="outlined" v-model="nomeProfissional"
+                                <v-select label="Profissional" variant="outlined" v-model="profissional"
                                     :items="store.getters.profissionais" :item-value="profissional => profissional.id"
-                                    :item-title="profissional => profissional.nome" :disabled="ativarEdicao" />
+                                    :item-title="profissional => profissional.nome" :disabled="ativarEdicao"
+                                    @update:model-value="trocarSelectTeste(profissional)" />
                                 <v-text-field label="Data de Solicitação" variant="outlined"
                                     v-model="store.state.agendamento.consulta.data_solicitacao" disabled />
                             </v-col>
@@ -86,7 +90,7 @@
                                 text="Ver Respostas Confidências" @click="showDialogRespostas" variant="outlined" />
                             <v-btn class="mr-5" text="Salvar" variant="tonal" @click="salvar"
                                 :disabled="ativarEdicao" />
-                            <v-btn @click="fechar" text="Fechar" variant="tonal" />
+                            <v-btn @click="fecharDialog" text="Fechar" variant="tonal" />
                         </v-card-actions>
                     </v-card-item>
                 </form>
@@ -155,6 +159,7 @@
 
     <v-dialog v-model="store.state.controladoresTela.dialogExcluir" persistent>
         <v-card class=" mx-auto" style="width: 300px;">
+            <p>{{ store.state.agendamento.idConsulta }}</p>
             <v-toolbar title="Aviso" color="primary" />
             <v-card-text style="text-align: justify;">Tem certeza que deseja excluir esse agendamento?</v-card-text>
             <v-card-actions>
@@ -162,7 +167,6 @@
                 <v-btn text="Sim" variant="tonal" @click="excluirAgendamento" />
                 <v-btn text="Não" variant="tonal" @click="fecharDialogExcluir" />
             </v-card-actions>
-            <p>{{ props.consulta.id }}</p>
             <v-dialog v-model="store.state.controladoresTela.isMessageSucesso" persistent>
                 <mensagemSucesso />
             </v-dialog>
@@ -186,36 +190,109 @@ import mensagemSucesso from '@/components/Mensagens/mensagemSucesso.vue'
 import mensagemSucessoExcluir from '@/components/Mensagens/mensagemSucessoExcluir.vue';
 import avisoDataObrigatoria from '@/components/Mensagens/avisoDataObrigatoria.vue';
 import gerarExcel from '@/components/gerarPlanilha.vue';
+import tratamentoErrorsZod from '@/services/erros/tratarAgendamento';
+import tratarErroZod from '@/services/erros/tratarAgendamento';
+const store = useStore()
 
 // let teste = true
 const psi = localStorage.getItem('psi')
 const props = defineProps({
     consulta: Object
 })
+
+
+
+
+
+
 const profissionais = ref([])
 
 //Variáveis e constantes
 const dialog = ref(false)
+let habilitarCData = ref(true)
 let ativarEdicao = ref(true)
-const store = useStore()
 let showRespostas = ref(false)
-//props
-const nomeProfissional = ref('')
-nomeProfissional.value = props.consulta.Profissional ? props.consulta.Profissional.nome : 'Profissional Indefinido'
+const profissional = ref('')
+profissional.value = props.consulta.Profissional ? props.consulta.Profissional.nome : 'Profissional Indefinido'
 const selectTipos = ref(['Confirmada', 'Cancelada'])
-
 let dataProps = props.consulta.data
+const isSelectProfissional = !profissional.value ? true : false
+
 
 function getDataAtual() {
     const data = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
     return data;
 }
 
+//Funções da tela
+
+function habilitarCampoData(item) {
+
+    if (item === 'Confirmada') {
+        habilitarCData.value = false
+    } else {
+        habilitarCData.value = true
+
+    }
+    console.log(item)
+}
 
 
-const isSelectProfissional = !nomeProfissional.value ? true : false
+function trocarSelectTeste(item) {
+    store.dispatch('setProfissionalId', item)
+    console.log(store.state.agendamento.consulta)
+    console.log(item)
+}
 
-console.log(isSelectProfissional)
+async function abrirDialog() {
+    if (props.consulta.status === 'Solicitada') {
+        habilitarCData.value = true
+
+        profissional.value = 'Profissional Indefinido'
+
+        console.log('entrou aqui')
+    }
+
+    console.log('abri modal de editar agendamento')
+    await store.dispatch('getConsulta', props.consulta.id)
+    await store.dispatch('getProfissionais')
+    console.log("Profissionais do store:", store.getters.profissionais)
+    if (store.state.profissionais.profissional.nome === '' && store.state.profissionais.profissional.especialidade === '') {
+        console.log('Profissional indefinido')
+    } else {
+        console.log(store.state.profissionais.profissional)
+    }
+    profissionais.value = store.getters.profissionais
+    if (profissionais.value.message === 'Nenhuma profissional cadastrado no sistema') {
+        store.dispatch('setShowMsgSemProfi', true)
+    }
+    dialog.value = !dialog.value
+    console.log(profissionais.value)
+}
+
+
+async function fecharDialog() {
+
+    ativarEdicao.value = true
+
+    console.log('fechar modal de editar agendamento')
+
+    dialog.value = !dialog.value
+    console.log(store.getters.profissionais)
+    store.dispatch('listarConsultas');
+
+}
+
+async function abrirDialogExcluir() {
+    store.dispatch('setIdConsulta', props.consulta.id)
+    store.dispatch('setDialogExcluir', true)
+
+}
+
+
+function EnabledEdit() {
+    ativarEdicao.value = !ativarEdicao.value
+}
 
 
 function fecharDialogExcluir() {
@@ -232,92 +309,61 @@ function fecharRespostas() {
 async function excluirAgendamento() {
     try {
         store.dispatch('IsMessageExcluir', true);
-        await store.dispatch('excluirConsulta', props.consulta.id)
+        await store.dispatch('excluirConsulta', store.state.agendamento.idConsulta)
 
     } catch (error) {
         console.error(error)
     }
 }
+
+function desabilitarCampos() {
+    ativarEdicao.value = false
+}
+
+
 
 async function salvar() {
-    let dataP = formatDate(dataProps)
-    if (dataP === store.state.agendamento.consulta.data) {
-        store.dispatch('setAvisoDataObg', true)
-        store.dispatch('setDataConsulta', '')
-        console.log('datas iguais')
-        dataP = ''
-        store.dispatch('setIsMsgSAgendamento', false);
 
-    } else {
-        store.state.agendamento.consulta.profissionalId = nomeProfissional.value
+    store.dispatch('agendarConsulta')
 
-        try {
-            await store.dispatch('getProfissionalById', nomeProfissional.value)
-            await store.dispatch('agendarConsulta',);
-            // await store.dispatch('criarNotificacao', props.consulta.pacienteId)
-            store.dispatch('setIsMsgSAgendamento', true);
-
-        } catch (error) {
-            console.error(error);
-        }
-
-        store.dispatch('listarConsultas');
-        console.log(store.state.agendamento.consulta.data)
-
-
-        setTimeout(() => {
-            fechar();
-        }, 500);
-
-    }
-}
-
-async function fechar() {
-
-    dialog.value = !dialog.value
-    console.log(store.getters.profissionais)
-
-
-    try {
-        await store.dispatch('getConsulta', props.consulta.id)
-
-    } catch (error) {
-        console.error(error)
-    }
-    console.log(props.consulta.Profissional.especialidade)
 
 }
 
-async function abrirDialogExcluir() {
-    store.dispatch('setDialogExcluir', true)
 
-}
+// async function salvar() {
+//     let dataP = formatDate(dataProps)
+//     if (dataP === store.state.agendamento.consulta.data) {
+//         store.dispatch('setAvisoDataObg', true)
+//         store.dispatch('setDataConsulta', '')
+//         console.log('datas iguais')
+//         store.dispatch('setConsulta', null)
+//         dataP = ''
+//         store.dispatch('setIsMsgSAgendamento', false);
 
-async function abrirDialog() {
-    console.log('entrou aqui')
-    await store.dispatch('getConsulta', props.consulta.id)
-    await store.dispatch('getProfissionais')
-    if (store.state.profissionais.profissional) {
-    } else {
-        console.log('Profissional indefinido')
-    }
-    profissionais.value = store.getters.profissionais
-    if (profissionais.value.message === 'Nenhuma profissional cadastrado no sistema') {
-        store.dispatch('setShowMsgSemProfi', true)
-    }
-    dialog.value = !dialog.value
-    console.log(profissionais.value)
-}
+//     } else {
+//         store.state.agendamento.consulta.profissionalId = nomeProfissional.value
 
-function EnabledEdit() {
-    ativarEdicao.value = !ativarEdicao.value
-}
+//         try {
+//             await store.dispatch('getProfissionalById', nomeProfissional.value)
+//             await store.dispatch('agendarConsulta',);
+//             store.dispatch('setIsMsgSAgendamento', true);
 
-onBeforeMount(async () => {
+//         } catch (error) {
+//             console.error(error);
+//         }
 
-    console.error('montando....')
+//         store.dispatch('listarConsultas');
+//         console.log(store.state.agendamento.consulta.data)
 
-})
+
+//         setTimeout(() => {
+//             fechar();
+//         }, 500);
+
+//     }
+// }
+
+
 
 </script>
 

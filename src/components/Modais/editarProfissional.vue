@@ -29,8 +29,8 @@
         </v-container>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click="close" color="blue-darken-1" variant="tonal" text="Fechar" />
             <v-btn @click="submit" type="submit" variant="tonal" color="blue-darken-2" text="Atualizar" />
+            <v-btn @click="close" color="blue-darken-1" variant="tonal" text="Fechar" />
         </v-card-actions>
     </v-sheet>
 </template>
