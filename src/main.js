@@ -1,5 +1,4 @@
 import App from "./App.vue";
-import "@vuepic/vue-datepicker/dist/main.css";
 
 
 // Composables
@@ -15,3 +14,5 @@ import {
 const app = createApp(App);
 registerPlugins(app);
 app.mount("#app");
+
+

@@ -19,7 +19,7 @@
                                 <td>{{ consulta.Paciente.nome }}</td>
                                 <td>{{ consulta.Profissional ? consulta.Profissional.nome : 'Não Definido' }}</td>
                                 <td>{{ consulta.servico }}</td>
-                                <td>{{ consulta.data ? formatDate(consulta.data) : 'Data indefinida' }}</td>
+                                <td>{{ consulta.data ? formatarDataHora(consulta.data) : 'Data indefinida' }}</td>
                                 <td>{{ consulta.status }}</td>
                                 <td>{{ formatDate(consulta.data_solicitacao) }}</td>
                             </tr>
@@ -47,11 +47,12 @@ import { computed } from 'vue';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { useStore } from 'vuex';
-import formatDate from '@/services/date';
+import { formatarDataHora, formatDate } from '@/services/date';
 const store = useStore()
 
 const consultasFiltradas = computed(() => {
-    return store.getters.consultasFiltradas;
+    // return store.getters.consultasFiltradas;
+    return store.getters.consultasFiltradasRelatorio;
 });
 
 const totalConsultas = computed(() => {
@@ -70,7 +71,7 @@ const gerarPDF = () => {
         consulta.Paciente.nome,
         consulta.Profissional ? consulta.Profissional.nome : 'Não Definido',
         consulta.servico,
-        consulta.data ? formatDate(consulta.data) : '',
+        consulta.data ? formatarDataHora(consulta.data) : '',
         consulta.status,
         consulta.data_solicitacao ? formatDate(consulta.data_solicitacao) : '',
     ]);
@@ -79,8 +80,9 @@ const gerarPDF = () => {
     doc.text(`Total de Consultas: ${totalConsultas.value}`, 12, 285);
 
     doc.autoTable({
-        head: [['Paciente', 'Profissional', 'Serviço', 'Data', 'Status', 'Data de Solicitação']],
+        head: [['Paciente', 'Profissional', 'Serviço', 'Data Consulta', 'Status', 'Data de Solicitação']],
         body: tableData,
+
     });
 
     doc.save('relatorio_consultas.pdf');

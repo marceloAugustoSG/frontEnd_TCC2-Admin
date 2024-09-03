@@ -1,7 +1,9 @@
 export default function tratarAgendamento(consulta) {
   if (consulta.profissionalId === null) {
     return "Escolha um profissional";
-  } else if (consulta.data === "31/12/1969, 21:00") {
+  } else if (consulta.data === "01/01/1970, 00:00") {
+    return "Data indefinida";
+  } else if (consulta.data === null) {
     return "Data indefinida";
   } else if (consulta.data === "") {
     return "Data indefinida";

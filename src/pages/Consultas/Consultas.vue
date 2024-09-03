@@ -40,6 +40,8 @@
         <v-container fluid>
             <v-row>
                 <v-col cols="12" lg="4" v-for="consulta in store.getters.consultasFiltradas" :key="consulta.id">
+
+                    <!-- {{consulta}} -->
                     <v-sheet elevation="3" border rounded>
                         <v-toolbar :title="consulta.servico">
                             <div style="display: flex;" class="mr-2">
@@ -49,8 +51,8 @@
                         <v-divider />
                         <div class="ma-5">
                             <p class="mb-5"><strong>Paciente: </strong>{{ consulta.Paciente.nome }}</p>
-                            <p class="mb-5"><strong>Data:
-                                </strong>{{ consulta.data ? formatDate(consulta.data) : 'Data não definida' }}</p>
+                            <p class="mb-5"><strong>Data e Horário:
+                                </strong>{{ consulta.data ? formatarDataHora(consulta.data) : 'Data não definida' }}</p>
                             <p class="mb-5"><strong>Data de Solicitação: </strong>{{
                                 formatDate(consulta.data_solicitacao) }}</p>
 
@@ -66,11 +68,11 @@
 </template>
 
 <script setup>
-import { computed, onBeforeMount, reactive, ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { useStore } from "vuex";
 import EditarConsulta from '@/components/Modais/EditarConsulta.vue';
-import formatDate from '@/services/date'
-
+import { formatarDataHora } from "@/services/date";
+import { formatDate } from "@/services/date";
 const store = useStore()
 
 

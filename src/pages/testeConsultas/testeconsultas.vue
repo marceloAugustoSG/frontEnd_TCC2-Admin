@@ -27,6 +27,7 @@
         <v-container v-else fluid>
             <v-row>
                 <v-col cols="12" lg="4" v-for="consulta in filteredItems" :key="consulta.id">
+
                     <v-sheet elevation="3" border rounded>
                         <v-toolbar :title="consulta.servico">
                             <div style="display: flex;" class="mr-2">
@@ -37,15 +38,16 @@
                         <div class="ma-5">
                             <p class="mb-5"><strong>Paciente: </strong>{{ consulta.Paciente.nome }}</p>
                             <p class="mb-5"><strong>Data:
-                                </strong>{{ consulta.data ? formatDate(consulta.data) : 'Data não definida' }}</p>
+                                </strong>{{ consulta.data ? formatDate(consulta.data) : 'Dataaa não definida' }}</p>
                             <p class="mb-5"><strong>Data de Solicitação: </strong>{{
-                        formatDate(consulta.data_solicitacao)
-                    }}
+                                formatDate(consulta.data_solicitacao)
+                            }}
                             </p>
                             <p
                                 :class="{ 'text-orange': consulta.status === 'Solicitada', 'text-green': consulta.status === 'Confirmada', 'text-red': consulta.status === 'Cancelada' }">
                                 <strong>Status: </strong>{{ consulta.status }}
                             </p>
+
                         </div>
                     </v-sheet>
                 </v-col>

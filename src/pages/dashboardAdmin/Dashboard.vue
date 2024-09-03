@@ -54,6 +54,10 @@
             <v-icon start color="colorIcons" icon="mdi-chart-line" />
             Relatórios
           </v-list-item>
+          <v-list-item to="/teste">
+            <v-icon start color="colorIcons" icon="mdi-chart-line" />
+            teste
+          </v-list-item>
         </v-list>
       </v-navigation-drawer>
       <v-main>

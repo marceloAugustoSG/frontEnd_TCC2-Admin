@@ -2,15 +2,24 @@ const contradoresTelaModule = {
   state: {
     showMsgSucessoAgendamento: false,
     showMEditProf: false,
+    showSucessoEditProf: false,
     showMDeletarProf: false,
     showMNewProf: false,
     msgSaveProf: false,
     showRelatorio: false,
-    dialogExcluir: false,
+    dialogCancelar: false,
     isMessageExcluir: false,
     showAvisoDataObg: false,
+    showDialogExcluirConsulta: false,
   },
   mutations: {
+    setShowDialogExcluirConsulta(state, payload) {
+      state.showDialogExcluirConsulta = payload;
+    },
+
+    setShowModalSucesso(state, payload) {
+      state.showSucessoEditProf = payload;
+    },
     setIsMsgSAgendamento(state, payload) {
       state.showMsgSucessoAgendamento = payload;
     },
@@ -23,14 +32,14 @@ const contradoresTelaModule = {
       state.isMessageExcluir = payload;
     },
 
-    setDialogExcluir(state, payload) {
-      state.dialogExcluir = payload;
+    setDialogCancelar(state, payload) {
+      state.dialogCancelar = payload;
     },
     setShowRelatorio(state, payload) {
       state.showRelatorio = payload;
     },
 
-    SetShowMEditProf(state, payload) {
+    setShowMEditProf(state, payload) {
       state.showMEditProf = payload;
     },
 
@@ -42,12 +51,23 @@ const contradoresTelaModule = {
       state.showMNewProf = payload;
     },
 
-    SetMsgSaveProf(state, payload) {
+    setMsgSaveProf(state, payload) {
       state.msgSaveProf = payload;
     },
   },
   getters: {},
   actions: {
+    setShowDialogExcluirConsulta({ commit }, value) {
+      commit("setShowDialogExcluirConsulta", value);
+    },
+
+    setMsgSaveProf({ commit }, value) {
+      commit("setMsgSaveProf", value);
+    },
+
+    setShowModalSucesso({ commit }, value) {
+      commit("setShowModalSucesso", value);
+    },
     setIsMsgSAgendamento({ commit }, valor) {
       commit("setIsMsgSAgendamento", valor);
     },
@@ -60,8 +80,8 @@ const contradoresTelaModule = {
       commit("setIsMessageExcluir", valor);
     },
 
-    setDialogExcluir({ commit }, valor) {
-      commit("setDialogExcluir", valor);
+    setDialogCancelar({ commit }, valor) {
+      commit("setDialogCancelar", valor);
     },
 
     setShowRelatorio({ commit }, valor) {
@@ -73,7 +93,7 @@ const contradoresTelaModule = {
     },
 
     setShowMEditProf({ commit }, valor) {
-      commit("SetShowMEditProf", valor);
+      commit("setShowMEditProf", valor);
     },
     setShowMDeletarProf({ commit }, valor) {
       commit("SetShowMDeletarProf", valor);

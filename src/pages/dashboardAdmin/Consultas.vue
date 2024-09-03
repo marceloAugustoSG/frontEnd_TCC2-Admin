@@ -37,15 +37,17 @@
             <div class="ma-5">
               <p class="mb-5"><strong>Paciente: </strong>{{ consulta.Paciente.nome }}</p>
               <p class="mb-5"><strong>Data:
-                </strong>{{ consulta.data ? formatDate(consulta.data) : 'Data não definida' }}</p>
+                </strong>{{ consulta.data ? consulta.data : 'Data não definida' }}</p>
               <p class="mb-5"><strong>Data de Solicitação: </strong>{{
-            formatDate(consulta.data_solicitacao)
-          }}
+                consulta.data_solicitacao
+              }}
               </p>
               <p
                 :class="{ 'text-orange': consulta.status === 'Solicitada', 'text-green': consulta.status === 'Confirmada', 'text-red': consulta.status === 'Cancelada' }">
                 <strong>Status: </strong>{{ consulta.status }}
               </p>
+
+             
             </div>
           </v-sheet>
         </v-col>
@@ -60,6 +62,7 @@ import { computed, onBeforeMount, ref } from "vue";
 import { useStore } from "vuex";
 import EditarConsulta from '@/components/EditarConsulta.vue';
 import formatDate from '@/services/date'
+import { formatarData } from "@/services/date";
 
 const store = useStore()
 

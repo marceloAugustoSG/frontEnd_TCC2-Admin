@@ -25,7 +25,7 @@ const loginLogoutModule = {
   },
   getters: {},
   actions: {
-    async logar({ commit }, usuario) {
+    async logar({ commit,state }, usuario) {
       try {
         const resposta = await http.post("login", usuario);
         const data = resposta.data;
@@ -41,8 +41,7 @@ const loginLogoutModule = {
           commit("setPsi", false);
 
           localStorage.setItem("psi", false);
-          console.log(this.state.isPsi);
-
+          console.log(state.isPsi);
           localStorage.setItem("usuarioId", tokenDecodificado.id);
           localStorage.setItem("token", data);
           router.push({ name: "dashboardPsi" });
@@ -60,7 +59,8 @@ const loginLogoutModule = {
 
           commit("setMessage", "");
 
-          router.push({ name: "dashboardAdmin" });
+          // router.push({ name: "dashboardAdmin" });
+          router.push({ name: "inicio" });
         }
       } catch (error) {
         console.error(error);

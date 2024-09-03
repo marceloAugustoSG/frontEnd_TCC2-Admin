@@ -1,7 +1,7 @@
 import { http } from "@/services/axiosConfig";
-import formatDate from "@/services/date";
+import { converterDataParaUTC, formatarDataHora } from "@/services/date";
 import tratarAgendamento from "@/services/erros/tratarAgendamento";
-
+import { formatDate } from "@/services/date";
 const agendamentosModule = {
   state: {
     search: "",
@@ -24,7 +24,7 @@ const agendamentosModule = {
         nome: "",
         especialidade: "",
       },
-      data: new Date(0, 0, 0),
+      data: "",
       data_solicitacao: "",
       id: "",
       observacao: "",
@@ -36,6 +36,7 @@ const agendamentosModule = {
     },
     consultas: [],
     consultasFiltradas: [],
+    consultasProfissional: []
     // outras definições relacionadas às consultas
   },
   mutations: {
@@ -65,11 +66,75 @@ const agendamentosModule = {
     setConsultas(state, payload) {
       state.consultas = payload;
     },
+    setConsultasProfissional(state, payload) {
+      state.consultasProfissional = payload
+    },
     setConsultasFiltradas(state, payload) {
       state.consultasFiltradas = payload;
     },
   },
   getters: {
+    consultasParaHoje: (state) => {
+      // Obtém a data atual no formato 'yyyy-mm-dd'
+      const now = new Date()
+        .toLocaleDateString("pt-BR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .split("/")
+        .reverse()
+        .join("-");
+
+      console.log(now);
+
+      return state.consultas.filter((consulta) => {
+        // Converte a data da consulta para o formato 'yyyy-mm-dd'
+        const consultaData = new Date(consulta.data)
+          .toLocaleDateString("pt-BR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          })
+          .split("/")
+          .reverse()
+          .join("-");
+        // Compara a data da consulta com a data atual
+        return consultaData === now;
+      });
+    },
+
+    consultasParaAmanha: (state) => {
+      // Obtém a data de amanhã
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowFormatted = tomorrow
+        .toLocaleDateString("pt-BR", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .split("/")
+        .reverse()
+        .join("-");
+
+      return state.consultas.filter((consulta) => {
+        // Converte a data da consulta para o formato 'yyyy-mm-dd'
+        const consultaData = new Date(consulta.data)
+          .toLocaleDateString("pt-BR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          })
+          .split("/")
+          .reverse()
+          .join("-");
+        // Compara a data da consulta com a data de amanhã
+        return consultaData === tomorrowFormatted;
+      });
+    },
+
+
     consultasFiltradas: (state) => {
       // Faz uma cópia da matriz de consultas
       let consultasFiltradas = [...state.consultas];
@@ -117,6 +182,11 @@ const agendamentosModule = {
 
     consultas: (state) => state.consultas,
 
+    consultasAtendimentoMedico: (state) =>
+      state.consultas.filter(
+        (consulta) => consulta.servico === "Atendimento Médico"
+      ),
+
     consultasAtendimentoPsicologico: (state) =>
       state.consultas.filter(
         (consulta) => consulta.servico === "Atendimento Psicológico"
@@ -127,7 +197,14 @@ const agendamentosModule = {
           consulta.status !== "Solicitada" ||
           consulta.servico !== "Atendimento Psicológico"
       ),
-    // outros getters relacionados às consultas
+
+    consultasSolicitadas: (state) =>
+      state.consultas.filter((consulta) => consulta.status === "Solicitada"),
+    consultasConfirmadas: (state) =>
+      state.consultas.filter((consulta) => consulta.status === "Confirmada"),
+
+    consultasCanceladas: (state) =>
+      state.consultas.filter((consulta) => consulta.status === "Cancelada"),
   },
   actions: {
     setSearch({ commit }, search) {
@@ -143,6 +220,9 @@ const agendamentosModule = {
     },
     setConsultas({ commit, state }, consultas) {
       commit("setConsultas", consultas);
+    },
+    setConsultasProfissional({ commit, state }, consultas) {
+      commit("setConsultasProfissional", consultas);
     },
 
     setIdConsulta({ commit }, id) {
@@ -164,32 +244,16 @@ const agendamentosModule = {
 
     IsMessage({ commit }, valor) {
       commit("setIsMessage", valor);
-      // console.log(this.state.is)
     },
-
-    // async agendarConsulta({ commit, state }) {
-    //   let dataNula = new Date(0, 0, 0);
-    //   const consulta = {
-    //     status: state.consulta.status,
-    //     profissionalId: state.consulta.profissionalId,
-    //     data: state.consulta.data
-    //       ? state.consulta.data.concat(":00.000Z")
-    //       : formatDate(dataNula),
-    //   };
-    //   const consultaId = state.consulta ? Number(state.consulta.id) : null;
-    //   if (consultaId !== null) {
-    //     await http.put(`consulta/${consultaId}`, consulta);
-    //     console.log(consulta);
-    //   } else {
-    //     console.error("Consulta está nula ou indefinida");
-    //   }
-    // },
 
     async agendarConsulta({ commit, state }) {
       console.log("agendar consulta");
+      console.log(state.consulta.data);
       const consultaId = state.consulta ? Number(state.consulta.id) : null;
       console.log(state.consulta);
       const resposta = tratarAgendamento(state.consulta);
+
+      console.log(resposta);
 
       switch (resposta) {
         case "Escolha um profissional":
@@ -225,25 +289,48 @@ const agendamentosModule = {
       console.log(resposta);
     },
 
-    async getConsulta({ commit }, idConsulta) {
-      let consultaId = Number(idConsulta);
-      try {
-        const data = await http.get(`consulta/${consultaId}`);
-        let dataConsulta = data.data.data
-          ? formatDate(new Date(data.data.data))
-          : formatDate(null);
-        let datasolicitacao = new Date(data.data.data_solicitacao);
-        datasolicitacao = formatDate(datasolicitacao);
-        data.data.data = dataConsulta;
-        data.data.data_solicitacao = datasolicitacao;
-        commit("setConsulta", data.data);
-      } catch (error) {
-        console.error(error);
-      }
+    async getConsultaProfissional({ commit, state }, idProfissional) {
+      const consultas = await http.get(`consultas-profissional/${idProfissional}`);
+      commit("setConsultasProfissional", consultas.data);
+      console.log(state.consultasProfissional)
+
+      console.log(consultas.data);
+
+    },
+    async getConsulta({ commit, state }, idConsulta) {
+      const dadosConsulta = await http.get(`consulta/${idConsulta}`);
+      commit("setConsulta", dadosConsulta.data);
+      console.log(state.consulta);
+      state.consulta.data = state.consulta.data
+        ? formatarDataHora(state.consulta.data)
+        : null;
+      console.log(state.consulta);
+      state.consulta.data_solicitacao = formatDate(
+        state.consulta.data_solicitacao
+      );
     },
 
-    atualizarConsultas({ state, commit }) {
-      return state.consulta;
+    async atualizarConsulta({ state, dispatch }) {
+      state.consulta.status = "Cancelada";
+      console.log(state.consulta.data);
+      const dadosConsulta = {
+        data: converterDataParaUTC(state.consulta.data),
+        status: state.consulta.status,
+        profissionalId: state.consulta.profissionalId,
+      };
+
+      console.log(dadosConsulta);
+      console.log(state.consulta);
+
+      try {
+        const idConsulta = Number(state.consulta.id);
+        await http.put(`consulta/${idConsulta}`, dadosConsulta);
+        dispatch("listarConsultas");
+      } catch (error) {
+        console.log(error);
+      }
+
+      console.log(state.consulta.status);
     },
     async listarConsultas({ commit }) {
       const resposta = await http.get("consultas");
@@ -251,18 +338,18 @@ const agendamentosModule = {
       console.log(data);
       commit("setConsultas", data.consultas);
     },
-    async excluirConsulta({ commit }, idConsulta) {
-      commit("setIdConsulta", idConsulta);
+    async excluirConsulta({ commit, state, dispatch }) {
       console.log("teste id consulta do store");
-      console.log(this.state.agendamento.idConsulta);
-      let consultaId = Number(idConsulta);
+      console.log(state.idConsulta);
+
       try {
-        await http.delete(`consulta/${consultaId}`);
+        const idConsulta = Number(state.consulta.id);
+        await http.delete(`consulta/${idConsulta}`);
+        dispatch("listarConsultas");
       } catch (error) {
         console.error(error);
       }
     },
-    // outras ações relacionadas às consultas
   },
 };
 

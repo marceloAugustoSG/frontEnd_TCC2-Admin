@@ -25,6 +25,7 @@ const routes = [
 
     children: [
       {
+        name: "inicio",
         path: "/inicio",
         component: () => import("@/pages/dashboardAdmin/Inicio.vue"),
       },
@@ -43,7 +44,6 @@ const routes = [
         path: "/consultas",
         component: () => import("@/pages/Consultas/Consultas.vue"),
       },
-    
 
       {
         path: "/configuracoes",
@@ -52,6 +52,10 @@ const routes = [
       {
         path: "/perfil",
         component: () => import("@/components/DashBoard/Perfil.vue"),
+      },
+      {
+        path: "/teste",
+        component: () => import("@/components/TESTE/componenteTesteCalendario.vue"),
       },
     ],
   },

@@ -1,15 +1,18 @@
 <template>
     <v-container>
-        <v-dialog v-model="store.state.controladoresTela.showMDeletarProf" max-width="600px" persistent>
+        <v-dialog v-model="store.state.controladoresTela.showMDeletarProf" max-width="800px" persistent>
             <msgDeletarProfissional />
         </v-dialog>
 
-        <v-dialog v-model="store.state.msgSaveProf">
-            sucesso ao criar profissional
+        <v-dialog v-model="store.state.controladoresTela.msgSaveProf">
+            <mensagemSucesso1 :mensagem="'Profissional cadastrado !'" />
         </v-dialog>
 
         <v-dialog v-model="store.state.controladoresTela.showMEditProf" max-width="600px" persistent>
             <EditarProfissional />
+        </v-dialog>
+        <v-dialog v-model="store.state.controladoresTela.showSucessoEditProf" max-width="600px" persistent>
+            <mensagemSucesso1 :mensagem="'Profissional atualizado !'" />
         </v-dialog>
 
         <v-dialog v-model="store.state.controladoresTela.showMNewProf" max-width="600px" persistent>
@@ -31,10 +34,16 @@
                 <thead>
                     <tr>
                         <th class="text-left">
+                            ID
+                        </th>
+                        <th class="text-left">
                             Nome
                         </th>
                         <th class="text-left">
                             Especialidade
+                        </th>
+                        <th class="text-left">
+                            Telefone
                         </th>
                         <th class="text-left">
                             E-mail
@@ -47,13 +56,16 @@
                 </thead>
                 <tbody>
                     <tr v-for="item in profissionais" :key="item.id">
+                        <td>{{ item.id }}</td>
                         <td>{{ item.nome }}</td>
                         <td>{{ item.especialidade }}</td>
+                        <td>{{ item.telefone }}</td>
                         <td>{{ item.email }}</td>
                         <td>
                             <v-icon @click="editar(item)" icon="mdi-pencil" />
                             <v-icon @click="deletar(item)" icon="mdi-delete" />
-                            <!-- <v-icon @click="verAgenda" icon="mdi-view-list" /> -->
+                            <!-- <v-icon @click="deletar(item)" icon="mdi-view-agenda" /> -->
+                            <v-icon @click="verAgenda" icon="mdi-view-list" />
                         </td>
                     </tr>
                 </tbody>
@@ -64,54 +76,40 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
 import CriarProfissional from '@/components/Modais/CriarProfissional.vue';
 import EditarProfissional from '@/components/Modais/editarProfissional.vue';
 import msgDeletarProfissional from '@/components/Modais/msgDeletarProfissional.vue';
+import mensagemSucesso1 from '@/components/Mensagens/mensagemSucesso1.vue';
 
 import { useStore } from 'vuex';
 const store = useStore()
-const dialog = ref(false);
-const dialogNovoProfissional = ref(false)
-const dialogDelete = ref(false);
-const headers = [
-    { title: 'Nome', align: 'start', sortable: false, key: 'nome' },
-    { title: 'Especialidade', key: 'especialidade' },
-    { title: 'E-mail', key: 'email', sortable: false },
-    { title: 'Telefone', key: 'telefone', sortable: false },
-    { title: 'Ações', key: 'actions', sortable: false },
-];
-const profissionalEdit = ref({
-    nome: '',
-    especialidade: '',
-    email: '',
-    telefone: '',
-})
-const profissionais = ref([]);
 
-onBeforeMount(async () => {
-    await store.dispatch('listarProfissionais');
-    profissionais.value = store.state.profissionais.profissionais;
-    console.log(profissionais.value.message)
-});
+
+const profissionais = computed(() => store.getters.profissionais)
+
 
 function editar(item) {
     store.dispatch('getProfissionalById', item.id)
-    profissionalEdit.value = store.state.profissional
-    console.log(profissionalEdit.value)
     store.dispatch('setShowMEditProf', true)
 }
 
 function deletar(item) {
     store.dispatch('setShowMDeletarProf', true)
     store.dispatch('getProfissionalById', item.id)
+    console.log(store.state.profissionais.profissional.consultas)
+    console.log(store.state.profissionais.profissional.id)
     console.log(item.id)
-    store.dispatch('excluirProfissional', item.id)
 }
 
 function showNewProfissional() {
     store.dispatch('setShowMNewProf', true);
     console.log(store.state.controladoresTela.showMNewProf)
 }
+
+onBeforeMount(async () => {
+    await store.dispatch('listarProfissionais');
+});
+
 
 </script>

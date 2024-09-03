@@ -3,7 +3,13 @@
         <v-card-title>
             <span class="text-h5">Excluir</span>
         </v-card-title>
-        <v-card-subtitle>Deseja realmente excluir esse profissional?</v-card-subtitle>
+        <v-card-title>Deseja realmente excluir esse profissional?</v-card-title>
+        <v-sheet v-if="store.state.profissionais.consultasEmpty">
+            <v-card-subtitle>
+                Existem consultas que estão ligadas a esse profissional</v-card-subtitle>
+            <v-card-subtitle>
+                Ao apagar esse profissional, as consultas relacionadas a ele tambem irão ser apagadas</v-card-subtitle>
+        </v-sheet>
 
         <v-card-actions>
             <v-spacer></v-spacer>
@@ -18,17 +24,24 @@
 <script setup>
 import { useStore } from 'vuex';
 
+const store = useStore()
 const props = defineProps({
     profissional: Object
 
 })
 
-const store = useStore()
+
 function confirmar() {
-    store.dispatch('excluirProfissional', store.state.profissionais.profissional.id)
-    console.log(store.state.profissionais.profissional.id)
-    window.location.reload();
-    store.dispatch('setShowMDeletarProf', false)
+    if (store.state.profissionais.consultasEmpty) {
+        store.dispatch('excluirConsultasProfissional', store.state.profissionais.profissional.id)
+        store.dispatch('setShowMDeletarProf', false)
+    }
+    else {
+        console.log(store.state.profissionais.profissional)
+        console.log(store.state.profissionais.profissional.id)
+        store.dispatch('excluirProfissional', store.state.profissionais.profissional.id)
+        store.dispatch('setShowMDeletarProf', false)
+    }
 }
 
 function fechar() {

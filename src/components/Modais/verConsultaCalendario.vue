@@ -1,9 +1,7 @@
 <template>
     <v-container>
-        <v-dialog v-model="store.state.showMsgSemProfi" max-width="600px">
-            <v-alert closable type="warning">Cadastre algum profissional no Sistema</v-alert>
-        </v-dialog>
-        <v-dialog v-model="dialog" persistent>
+
+        <v-dialog v-model="$props.dialog" persistent>
             <p>{{ props.consulta.id }}</p>
             <v-sheet class=" mx-auto" style="width:  1000px;" border rounded>
                 <v-toolbar color="primary" :title="!ativarEdicao ? 'Editar consulta' : 'Detalhes da Consulta'">
@@ -101,49 +99,7 @@
         </v-dialog>
     </v-container>
 
-    <v-dialog v-model="showRespostas" persistent>
-        <v-card>
-            <v-toolbar title="Respostas Confidências" />
-            <v-card-item class="ma-5">
-                <v-row>
-                    <v-col cols="12">
-                        <p>Curso: {{ store.state.resposta['Curso'] }}</p>
-                        <p>Estudante de: {{ store.state.resposta['Estudante de'] }}</p>
-                        <p>Motivos para o atendimento: {{ store.state.resposta['Motivos para o atendimento'] }}</p>
-                        <p>Se mudou para estudar na UFES? {{ store.state.resposta['Se mudou para estudar na UFES?'] }}
-                        </p>
-                        <p>com quem você reside em Alegre?? {{ store.state.resposta['com quem você reside em Alegre?']
-                            }}
-                        </p>
-                    </v-col>
-                    <v-col cols="12">
-
-
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="12" style="display: flex; align-items: center; justify-content: space-between;">
-                        <p>Respostas Confidênciais: </p>
-                    </v-col>
-                </v-row>
-
-                <v-row>
-                    <v-col cols="12" style="display: flex; align-items: center; justify-content: space-between;">
-                        <ul>
-                            <li class="ma-1" v-for="(valor, chave) in store.state.resposta['Respostas Confidencias']"
-                                :key="chave">
-                                {{ chave }}: {{ valor }}</li>
-                        </ul>
-                    </v-col>
-                </v-row>
-            </v-card-item>
-            <v-card-actions class="ma-3">
-                <v-spacer />
-                <gerarExcel :json-data="store.state.resposta" style="margin-right: 30px;" />
-                <v-btn @click="fecharRespostas" text="Fechar" variant="tonal" />
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+   
 
 
     <div style="display: flex;" v-if="props.consulta.status === 'Confirmada'">
@@ -192,14 +148,13 @@ import mensagemSucesso from '@/components/Mensagens/mensagemSucesso.vue'
 import mensagemSucessoExcluir from '@/components/Mensagens/mensagemSucessoExcluir.vue';
 import avisoExcluirConsulta from '../Mensagens/avisoExcluirConsulta.vue';
 import avisoDataObrigatoria from '@/components/Mensagens/avisoDataObrigatoria.vue';
-import gerarExcel from '@/components/gerarPlanilha.vue';
-import { formatarDataHora } from '@/services/date';
 const store = useStore()
 
 
 const psi = localStorage.getItem('psi')
 const props = defineProps({
-    consulta: Object
+    consulta: Object,
+    dialog: Boolean
 })
 
 const profissionais = ref([])
