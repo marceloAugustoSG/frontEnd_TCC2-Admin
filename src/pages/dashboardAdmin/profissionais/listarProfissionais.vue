@@ -48,7 +48,7 @@
                         <th class="text-left">
                             E-mail
                         </th>
-                        <th class="text-left">
+                        <th class="text-center" x>
                             Ações
                         </th>
 
@@ -61,11 +61,20 @@
                         <td>{{ item.especialidade }}</td>
                         <td>{{ item.telefone }}</td>
                         <td>{{ item.email }}</td>
-                        <td>
-                            <v-icon @click="editar(item)" icon="mdi-pencil" />
-                            <v-icon @click="deletar(item)" icon="mdi-delete" />
-                            <!-- <v-icon @click="deletar(item)" icon="mdi-view-agenda" /> -->
-                            <v-icon @click="verAgenda" icon="mdi-view-list" />
+                        <td class="d-flex align-center justify-center" style="gap: 10px;">
+
+                            <v-btn variant="flat">
+                                <v-icon @click="editar(item)" color="btn" icon="mdi-pencil" />
+                                <v-tooltip activator="parent" location="bottom">Editar</v-tooltip>
+                            </v-btn>
+                            <v-btn variant="flat">
+                                <v-icon @click="deletar(item)" color="btn" icon="mdi-delete" />
+                                <v-tooltip activator="parent" location="bottom">Excluir</v-tooltip>
+                            </v-btn>
+                            <v-btn variant="flat">
+                                <v-icon @click="verAgenda(item.id)" color="btn" icon="mdi-view-list" />
+                                <v-tooltip activator="parent" location="bottom">Agenda</v-tooltip>
+                            </v-btn>
                         </td>
                     </tr>
                 </tbody>
@@ -83,6 +92,7 @@ import msgDeletarProfissional from '@/components/Modais/msgDeletarProfissional.v
 import mensagemSucesso1 from '@/components/Mensagens/mensagemSucesso1.vue';
 
 import { useStore } from 'vuex';
+import router from '@/router';
 const store = useStore()
 
 
@@ -105,6 +115,14 @@ function deletar(item) {
 function showNewProfissional() {
     store.dispatch('setShowMNewProf', true);
     console.log(store.state.controladoresTela.showMNewProf)
+}
+
+const verAgenda = (id) => {
+    console.log(id)
+    store.dispatch('setIdProfissionalSelecionado', Number(id))
+    console.log('id do vuex:', store.state.profissionais.idProfissionalSelecionado)
+    router.push('/agenda-calendario');
+
 }
 
 onBeforeMount(async () => {

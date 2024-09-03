@@ -1,10 +1,14 @@
 <template>
+
+
     <v-sheet class="pa-5 ma-5" rounded>
+
+        <v-btn text="Voltar" @click="voltarNvegacao" color="btn" variant="outlined" style="margin: 20px;" />
         <v-card class="pa-5" elevation="2">
             <div class="calendar-header">
-                <v-btn text="<" @click="anterior" color="btn" variant="outlined" />
+                <v-btn text="◀" @click="anterior" color="btn" variant="flat" />
                 <span>{{ meses[mesAtual] }} - {{ anoAtual }}</span>
-                <v-btn text=">" @click="proximo" color="btn" variant="outlined" />
+                <v-btn text="▶" @click="proximo" color="btn" variant="flat" />
             </div>
 
         </v-card>
@@ -14,27 +18,7 @@
                 <div class="calendar-day" v-for="dia in daysInMonth" :key="dia" @click="abrirMDetalhesConsulta(dia)">
                     {{ dia }}
                     <div v-if="temConsulta(dia)" class="consulta-indicador"></div>
-
-
                 </div>
-                <!-- <v-dialog v-model="dialogTeste" persistent max-width="800px">
-                    <v-card>
-                        <v-card-title class="headline">Detalhes da Consulta</v-card-title>
-                        <v-card-text>
-                            <div v-if="consultaSelecionada">
-                                <p><strong>Data:</strong> {{ consultaSelecionada.data }}</p>
-                                <p><strong>Status:</strong> {{ consultaSelecionada.status }}</p>
-                                <p><strong>Paciente:</strong> {{ consultaSelecionada.paciente }}</p>
-                                <p><strong>Profissional de Saúde:</strong> {{ consultaSelecionada.profissionalSaude }}
-                                </p>
-                            </div>
-                        </v-card-text>
-                        <v-card-actions>
-                            <v-btn @click="fechar()">Fechar</v-btn>
-                        </v-card-actions>
-                    </v-card>
-
-                </v-dialog> -->
 
                 <v-dialog v-model="dialogTeste" persistent max-width="1000px">
                     <v-card>
@@ -47,8 +31,8 @@
                                             <v-card-text>
                                                 <p><strong>Data:</strong> {{ consulta.data }}</p>
                                                 <p><strong>Status:</strong> {{ consulta.status }}</p>
-                                                <p><strong>Paciente:</strong> {{ consulta.paciente }}</p>
-                                                <p><strong>Profissional de Saúde:</strong> {{ consulta.profissionalSaude
+                                                <p><strong>Paciente:</strong> {{ consulta.Paciente.nome }}</p>
+                                                <p><strong>Profissional de Saúde:</strong> {{ consulta.Profissional.nome
                                                     }}
                                                 </p>
                                             </v-card-text>
@@ -78,16 +62,12 @@
 
         </v-card>
     </v-sheet>
-
-
-
-
-
 </template>
 
 <script setup>
 import { useStore } from "vuex";
 import { ref, computed, onBeforeMount } from "vue";
+import router from "@/router";
 
 
 const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -98,7 +78,6 @@ const store = useStore();
 
 const consultasParaHoje = ref([]);
 
-// const consultaSelecionada = ref(null);
 
 const consultasMock = ref([
 
@@ -128,7 +107,8 @@ const consultasMock = ref([
     }
 ])
 
-const consultasProfissional = computed(() => store.state.agendamento.consultasProfissional);
+const consultasProfissional = ref([])
+
 
 
 
@@ -136,48 +116,29 @@ const fechar = () => {
     dialogTeste.value = !dialogTeste.value
 }
 
-// const abrirMDetalhesConsulta = (dia) => {
-//     const dataFormatada = `${dia.toString().padStart(2, '0')}/${(mesAtual.value + 1).toString().padStart(2, '0')}/${anoAtual.value}`;
-//     // alert(dataFormatada);
-//     console.log(temConsulta(dia))
 
-//     temConsulta(dia) ? dialogTeste.value = true : dialogTeste.value = false
-
-
-//     //chamar uma action que busca as consultas pela data,e dai com isso, preenche o objeto de consulta e renderiza o modal de detalhes
-//     //caso for mais de uma consulta, usarei o componente de slide que estou usando no página inicial 
-// }
-
-
-
-
-// const abrirMDetalhesConsulta = (dia) => {
-//     const dataFormatada = `${dia.toString().padStart(2, '0')}/${(mesAtual.value + 1).toString().padStart(2, '0')}/${anoAtual.value}`;
-
-//     const consulta = consultasMock.value.find(consulta => consulta.data === dataFormatada);
-
-//     if (consulta) {
-//         consultaSelecionada.value = consulta;
-//         dialogTeste.value = true;
-//     } else {
-//         consultaSelecionada.value = null;
-//         dialogTeste.value = false;
-//     }
-// };
 
 
 
 const abrirMDetalhesConsulta = (dia) => {
+    // Formata o dia selecionado para o formato 'dd/MM/yyyy'
     const dataFormatada = `${dia.toString().padStart(2, '0')}/${(mesAtual.value + 1).toString().padStart(2, '0')}/${anoAtual.value}`;
 
-    consultasParaHoje.value = consultasMock.value.filter(consulta => consulta.data === dataFormatada);
+    // Filtra as consultas para a data formatada
+    consultasParaHoje.value = consultasProfissional.value.filter(consulta => {
+        // Converte a data ISO da consulta para o formato 'dd/MM/yyyy'
+        const dataConsulta = new Date(consulta.data).toLocaleDateString('pt-BR');
+        return dataConsulta === dataFormatada;
+    });
 
-    if (consultasParaHoje.value.length > 0) {
-        dialogTeste.value = true;
-    } else {
-        dialogTeste.value = false;
-    }
+    // Abre ou fecha o diálogo com base no resultado do filtro
+    dialogTeste.value = consultasParaHoje.value.length > 0;
 };
+
+const voltarNvegacao = () => {
+    router.push('/profissionais');
+
+}
 
 const anterior = () => {
     if (mesAtual.value === 0) {
@@ -204,9 +165,10 @@ const proximo = () => {
 
 onBeforeMount(async () => {
 
-    await store.dispatch('getConsultaProfissional', 75)
-
-    console.log(store.state.agendamento.consultasProfissional);
+    await store.dispatch('getConsultaProfissional', store.state.profissionais.idProfissionalSelecionado)
+    consultasProfissional.value = store.state.agendamento.consultasProfissional.consultas
+    console.log(store.state.agendamento.consultasProfissional.consultas);
+    console.log(consultasProfissional.value);
 
 })
 
@@ -216,10 +178,19 @@ const daysInMonth = computed(() => {
 });
 
 
+
+
 const temConsulta = (dia) => {
+    console.log(dia);
+    // Formata a data no formato 'dd/MM/yyyy'
     const dataFormatada = `${dia.toString().padStart(2, '0')}/${(mesAtual.value + 1).toString().padStart(2, '0')}/${anoAtual.value}`;
-    console.log(dataFormatada)
-    return consultasMock.value.some(consulta => consulta.data === dataFormatada);
+    console.log(dataFormatada);
+
+    return consultasProfissional.value.some(consulta => {
+        // Converte a data ISO para o formato 'dd/MM/yyyy'
+        const dataConsulta = new Date(consulta.data).toLocaleDateString('pt-BR');
+        return dataConsulta === dataFormatada;
+    });
 };
 
 </script>

@@ -54,8 +54,8 @@ const routes = [
         component: () => import("@/components/DashBoard/Perfil.vue"),
       },
       {
-        path: "/teste",
-        component: () => import("@/components/TESTE/componenteTesteCalendario.vue"),
+        path: "/agenda-calendario",
+        component: () => import("@/components/calendario/componenteCalendario.vue"),
       },
     ],
   },

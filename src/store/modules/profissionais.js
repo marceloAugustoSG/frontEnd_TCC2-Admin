@@ -5,8 +5,13 @@ const profissionaisModule = {
     profissional: {},
     profissionais: [],
     consultasEmpty: false,
+    idProfissionalSelecionado: null
   },
   mutations: {
+
+    setIdProfissionalSelecionado(state, payload) {
+      state.idProfissionalSelecionado = payload;
+    },
     setProfissionais(state, payload) {
       state.profissionais = payload;
     },
@@ -24,6 +29,10 @@ const profissionaisModule = {
     consultasProf: (state) => state.state.profissional.consultas,
   },
   actions: {
+    setIdProfissionalSelecionado({ commit, state }, value) {
+      commit('setIdProfissionalSelecionado', value)
+
+    },
     setConsultasEmpty({ commit, state }, value) {
       commit("setConsultasEmpty", value);
     },
