@@ -14,9 +14,14 @@ const contradoresTelaModule = {
     showDialogExcluirConsulta: false,
     showDialogExcluirCompromisso: false,
     showAlertErrorAgendarConsulta: false,
-    showEditarConsulta: false
+    showEditarConsulta: false,
+    showMessageConflitoCompromisso: false
   },
   mutations: {
+    setShowMessageConflitoCompromisso(state, payload) {
+      state.showMessageConflitoCompromisso = payload
+    },
+
     setShowEditarConsulta(state, payload) {
       state.showEditarConsulta = payload
     },
@@ -73,6 +78,10 @@ const contradoresTelaModule = {
   },
   getters: {},
   actions: {
+    setShowMessageConflitoCompromisso({ commit }, value) {
+      commit('setShowMessageConflitoCompromisso', value)
+    },
+
     setShowEditarConsulta({ commit }, value) {
       commit('setShowEditarConsulta', value)
     },

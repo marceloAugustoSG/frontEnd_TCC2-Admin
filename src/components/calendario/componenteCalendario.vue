@@ -32,7 +32,7 @@
                                         <v-card width="50%" height="50%" class="d-flex justify-center align-center "
                                             border>
                                             <v-card-text>
-                                                <p><strong>Data :</strong> {{ formatDate(consulta.data) }}</p>
+                                                <p><strong>Data :</strong> {{ formatarDataHora(consulta.data) }}</p>
                                                 <p><strong>Status:</strong> {{ consulta.status }}</p>
                                                 <p><strong>Paciente:</strong> {{ consulta.Paciente.nome }}</p>
 
@@ -69,7 +69,7 @@
 import { useStore } from "vuex";
 import { ref, computed, onBeforeMount } from "vue";
 import router from "@/router";
-import { formatDate } from "@/services/date";
+import { formatDate,formatarDataHora } from "@/services/date";
 
 
 const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];

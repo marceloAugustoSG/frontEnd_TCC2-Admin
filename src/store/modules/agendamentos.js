@@ -317,6 +317,11 @@ const agendamentosModule = {
               }
             );
             if (resultadoRequest.status === 200) {
+
+              await http.post(`/paciente/${state.consulta.Paciente.id}/notificar`, {
+                mensagem:`Consulta agendada para o dia ${formatDate(state.consulta.data)} `
+
+              })
               commit("setShowAlertErrorAgendarConsulta", false);
               dispatch("listarConsultas");
               commit("setShowEditarConsulta", false);

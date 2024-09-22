@@ -144,7 +144,7 @@ async function submit() {
         store.dispatch('criarCompromisso', compromissoFormatado);
         store.dispatch('listarCompromissos');
         close();
-        store.dispatch('setMsgSaveProf', true);
+        // store.dispatch('setMsgSaveProf', true);
     } else {
         console.log('Form is not valid');
         return;

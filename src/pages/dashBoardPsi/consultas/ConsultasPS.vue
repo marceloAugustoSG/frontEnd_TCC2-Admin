@@ -14,7 +14,7 @@
                     <v-card class="pa-5">
                         <v-card-text>
                             <!-- <strong>Data:</strong> {{ formatarData(consulta.data) }}<br /> -->
-                            <strong>Data:</strong> {{ formatarDataHora(consulta.data) }}<br />
+                            <strong>Data:</strong> {{ formatarDt(consulta.data) }}<br />
                             <strong>Hora:</strong> {{ formatarHora(consulta.data) }}<br />
                             <strong>Paciente:</strong> {{ consulta.Paciente.nome }}
                         </v-card-text>
@@ -99,7 +99,7 @@
 <script setup>
 import { computed, onBeforeMount, ref } from 'vue';
 import { useStore } from 'vuex';
-import { formatarDataHora } from '@/services/date';
+import { formatarDataHora,formatarDt } from '@/services/date';
 import ExcelJS from 'exceljs';
 
 const store = useStore();

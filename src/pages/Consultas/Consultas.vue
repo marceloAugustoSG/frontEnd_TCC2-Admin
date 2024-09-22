@@ -100,6 +100,11 @@
                         <v-divider />
                         <div class="ma-5">
                             <p class="mb-5"><strong>Paciente: </strong>{{ consulta.Paciente.nome }}</p>
+
+                            <p class="mb-5"><strong>Profissional: </strong>{{
+                                consulta.Profissional ? `${consulta.Profissional.nome}` : 'Profissional Indefinido' }}
+                            </p>
+
                             <p class="mb-5"><strong>Data e Horário:
                                 </strong>{{ consulta.data ? formatarDataHora(consulta.data) : 'Data não definida' }}</p>
                             <p class="mb-5"><strong>Data de Solicitação: </strong>{{

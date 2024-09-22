@@ -118,3 +118,30 @@ export function formatHour(data) {
   console.log(horaFormatada);
   return horaFormatada;
 }
+
+
+export function formatarDt(dataHoraISO) {
+  // Data recebida
+  const dataHoraRecebida = new Date(dataHoraISO);
+
+  // Extrair informações da data
+  const dia = dataHoraRecebida.getUTCDate();
+  const mes = dataHoraRecebida.getUTCMonth() + 1; // Adicionando 1 porque os meses são indexados a partir de 0
+  const ano = dataHoraRecebida.getUTCFullYear();
+
+  // Extrair informações da hora
+  const horas = dataHoraRecebida.getUTCHours();
+  const minutos = dataHoraRecebida.getUTCMinutes();
+
+  // Formatar a data no formato dd/mm/aaaa e hora no formato hh:mm
+  const dataFormatada = `${dia.toString().padStart(2, "0")}/${mes
+    .toString()
+    .padStart(2, "0")}/${ano}`;
+  const horaFormatada = `${horas.toString().padStart(2, "0")}:${minutos
+    .toString()
+    .padStart(2, "0")}`;
+
+  let dataFormatadaT = `${dataFormatada}`;
+
+  return dataFormatadaT;
+}

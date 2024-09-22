@@ -1,5 +1,7 @@
 <template>
-    <v-btn @click="logout">Voltar para o login</v-btn>
+    <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%;">
+        <v-btn color="red" @click="logout">Voltar para o login</v-btn>
+    </div>
 </template>
 
 <script setup>

@@ -14,6 +14,12 @@
 
 
 
+            <v-dialog v-model="store.state.controladoresTela.showMessageConflitoCompromisso" max-width="600px">
+                <v-alert type="warning" density="compact" title="Aviso">Horário já ocupado para esse
+                    profissional</v-alert>
+            </v-dialog>
+
+
             <v-dialog v-model="store.state.controladoresTela.showMNewCompromisso" max-width="600px" persistent>
                 <criarCompromisso />
             </v-dialog>
@@ -62,7 +68,7 @@
                             <tr v-for="compromisso in compromissos" :key="compromisso.id">
                                 <td>{{ compromisso.tituloCompromisso }}</td>
                                 <!-- <td>{{ formatarData(compromisso.dataCompromisso) }}</td> -->
-                                <td>{{ formatarDataHora(compromisso.dataCompromisso) }}</td>
+                                <td>{{ formatarDt(compromisso.dataCompromisso) }}</td>
                                 <td>{{ obterDiaDaSemana(compromisso.dataCompromisso) }}</td>
                                 <td>{{ formatHour(compromisso.horaInicio) }}</td>
                                 <td>{{ formatHour(compromisso.horaFim) }}</td>
@@ -94,6 +100,7 @@ import { useStore } from 'vuex';
 import criarCompromisso from '@/components/Modais/criarCompromisso.vue'
 import { obterDiaDaSemana, obterHora, formatarData, formatHour } from '@/services/date'
 import { formatarDataHora } from '@/services/date';
+import { formatarDt } from '@/services/date';
 const store = useStore()
 
 const compromissos = computed(() => store.getters.compromissos);
@@ -107,12 +114,8 @@ function showNewCompromisso() {
 }
 
 function deletar(compromisso) {
-    console.log(compromisso.id)
-
     store.dispatch('excluirCompromisso', compromisso.id);
-    // store.dispatch('setShowDialogExcluirCompromisso', true);
-    store.dispatch('listarCompromissos');
-    // store.dispatch('excluirCompromisso', compromisso.id)
+
 }
 
 onBeforeMount(async () => {
