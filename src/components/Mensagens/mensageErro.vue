@@ -2,7 +2,7 @@
     <v-sheet elevation="2" max-width="600" rounded="lg" width="100%" class="pa-4 text-center mx-auto" border>
         <v-icon class="mb-5" color="success" icon="mdi-check-circle" size="100"></v-icon>
 
-        <h2 class="text-h5 mb-6">Consulta Agendada com Sucesso</h2>
+        <h2 class="text-h5 mb-6">Erro ao agendar a consulta</h2>
 
         <p class="mb-4 text-medium-emphasis text-body-2">
 

@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    teste
     <v-sheet dark rounded>
       <v-row class="pa-5">
         <v-col cols="12" lg="5">
@@ -14,7 +15,7 @@
 
         <v-col />
         <v-col>
-          <v-btn icon="mdi-refresh" color="card" @click="refresh" />
+          <v-btn icon="mdi-refresh" color="red" @click="refresh" />
         </v-col>
 
       </v-row>

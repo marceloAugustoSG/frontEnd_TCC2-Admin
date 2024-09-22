@@ -24,7 +24,7 @@
                     label="Senha" required />
                   <v-row class="pb-5">
                     <v-col>
-                      <v-btn type="submit" class="w-100" text="Entrar" prepend-icon="mdi-login" color="primary" />
+                      <v-btn type="submit" class="w-100" text="Entrar" prepend-icon="mdi-login" color="#0056b3 " />
                     </v-col>
                   </v-row>
                 </form>

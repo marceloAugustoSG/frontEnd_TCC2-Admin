@@ -57,3 +57,64 @@ export function formatarDataHora(dataHoraISO) {
 
   return dataFormatadaT;
 }
+
+
+export function obterDiaDaSemana(dataISO) {
+  // Cria um objeto Date a partir da data no formato ISO
+  const data = new Date(dataISO);
+
+  // Array com os nomes dos dias da semana
+  const diasSemana = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"];
+
+  // Retorna o nome do dia da semana correspondente
+  return diasSemana[data.getUTCDay()];
+}
+
+
+export function obterHora(dataISO) {
+  // Cria um objeto Date a partir da data no formato ISO
+  const data = new Date(dataISO);
+
+  // Pega as horas e minutos
+  let horas = data.getUTCHours();
+  let minutos = data.getUTCMinutes();
+
+  // Adiciona zero à esquerda se horas ou minutos forem menores que 10
+  horas = horas < 10 ? '0' + horas : horas;
+  minutos = minutos < 10 ? '0' + minutos : minutos;
+
+  // Retorna o horário no formato hh:mm
+  return `${horas}:${minutos}`;
+}
+
+export function formatarData(data) {
+  const dataObj = new Date(data);
+
+  // Obter componentes da data usando métodos UTC
+  const dia = String(dataObj.getUTCDate()).padStart(2, '0');
+  const mes = String(dataObj.getUTCMonth() + 1).padStart(2, '0'); // Mês começa em 0
+  const ano = dataObj.getUTCFullYear();
+
+  const dataFormatada = `${dia}/${mes}/${ano}`;
+  console.log(dataFormatada);
+  return dataFormatada;
+}
+
+
+
+export function formatHour(data) {
+  const dataObj = new Date(data);
+
+  // Configurações para o fuso horário de São Paulo
+  const options = {
+    timeZone: "America/Sao_Paulo",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  };
+
+  // Formata a hora
+  const horaFormatada = dataObj.toLocaleTimeString("pt-BR", options);
+  console.log(horaFormatada);
+  return horaFormatada;
+}

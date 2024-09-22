@@ -70,8 +70,12 @@ const routes = [
         component: () => import("@/pages/dashBoardPsi/Inicio.vue"),
       },
       {
-        path: "/consultasPsi",
-        component: () => import("@/pages/Consultas.vue"),
+        path: "/ps-consultas",
+        component: () => import("@/pages/dashBoardPsi/consultas/ConsultasPS.vue"),
+      },
+      {
+        path: "/agenda",
+        component: () => import("@/components/DashBoardPsi/agendaPsicologo/agenda.vue"),
       },
     ],
   },

@@ -1,10 +1,11 @@
 <template>
     <v-card class=" mx-auto" style="width: 300px;">
+        <!-- {{ store.state.agendamento.idConsulta }} -->
         <v-toolbar title="Aviso" color="primary" />
-        <v-card-text style="text-align: justify;">Tem certeza que deseja excluir esse agendamento?</v-card-text>
+        <v-card-text style="text-align: justify;">Tem certeza que deseja excluir esse compromisso?</v-card-text>
         <v-card-actions>
             <v-spacer />
-            <v-btn text="Sim" variant="tonal" @click="excluirAgendamento" />
+            <v-btn text="Sim" variant="tonal" @click="excluirCompromisso" />
             <v-btn text="Não" variant="tonal" @click="fecharDialogExcluir" />
         </v-card-actions>
 
@@ -19,9 +20,9 @@ import { useStore } from "vuex"
 
 const store = useStore()
 
-function excluirAgendamento() {
+function excluirCompromisso() {
 
-    store.dispatch('excluirConsulta')
+   store.dispatch('excluirCompromisso', compromisso.id)
     store.dispatch('setShowDialogExcluirConsulta', false)
 
 }

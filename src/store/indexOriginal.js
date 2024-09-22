@@ -205,12 +205,7 @@ const store = createStore({
           consulta.status !== "Solicitada" ||
           consulta.servico !== "Atendimento Psicológico"
       ),
-    // profissionais: (state) =>
-    //   state.profissionais.map((profissional) => ({
-    //     id: profissional.id,
-    //     nome: `${profissional.nome} (${profissional.especialidade})`,
-    //     especialidade: profissional.especialidade,
-    //   })),
+    
   },
   actions: {
     //CONTROLADORES DE TELA

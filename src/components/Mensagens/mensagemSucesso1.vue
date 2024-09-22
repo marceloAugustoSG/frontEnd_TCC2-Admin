@@ -20,6 +20,7 @@ const props = defineProps({
 const store = useStore()
 function fechar() {
     store.dispatch('listarProfissionais')
+    store.dispatch('listarCompromissos')
     store.dispatch('setShowModalSucesso', false)
     store.dispatch('setMsgSaveProf', false)
 

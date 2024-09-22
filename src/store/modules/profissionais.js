@@ -5,7 +5,10 @@ const profissionaisModule = {
     profissional: {},
     profissionais: [],
     consultasEmpty: false,
-    idProfissionalSelecionado: null
+    idProfissionalSelecionado: null,
+
+    profissionaisMedicos: [], // Lista de profissionais médicos
+    profissionaisPsicologicos: [], // Lista de profissionais psicológicos
   },
   mutations: {
 
@@ -27,6 +30,15 @@ const profissionaisModule = {
     profissional: (state) => state.profissional,
     profissionais: (state) => state.profissionais,
     consultasProf: (state) => state.state.profissional.consultas,
+    profissionaisMedicos: (state) => {
+      return state.profissionais.filter(prof => prof.especialidade === 'Atendimento Médico');
+    },
+
+    // Getter para profissionais psicológicos
+    profissionaisPsicologicos: (state) => {
+      return state.profissionais.filter(prof => prof.especialidade === 'Atendimento Psicológico');
+    },
+
   },
   actions: {
     setIdProfissionalSelecionado({ commit, state }, value) {
@@ -41,7 +53,7 @@ const profissionaisModule = {
     },
     async criarProfissional({ commit, dispatch }, dados) {
       try {
-        const resposta = await http.post("profissional", dados);
+        const resposta = await http.post("usuarioPsicologo", dados);
         const data = await resposta.data;
         console.log(data);
 

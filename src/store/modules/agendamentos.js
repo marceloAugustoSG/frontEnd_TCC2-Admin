@@ -4,6 +4,7 @@ import tratarAgendamento from "@/services/erros/tratarAgendamento";
 import { formatDate } from "@/services/date";
 const agendamentosModule = {
   state: {
+    mensagemResposta: "",
     search: "",
     ordenar: "",
     ord: 0,
@@ -16,6 +17,7 @@ const agendamentosModule = {
         telefone: "",
         matricula: "",
         tipo: "",
+        curso: "",
         usuarioId: "",
         dataNascimento: "",
       },
@@ -34,12 +36,31 @@ const agendamentosModule = {
       servico: "",
       status: "",
     },
+
+
+    idConsultaState: '',
+
+
+
     consultas: [],
     consultasFiltradas: [],
     consultasProfissional: []
     // outras definições relacionadas às consultas
   },
+
+
   mutations: {
+
+    setIdConsultaState(state, payload) {
+      state.idConsultaState = payload
+    },
+
+    setMensagemResposta(state, payload) {
+
+      state.mensagemResposta = payload
+    },
+
+
     setSearch(state, payload) {
       state.ord = payload;
     },
@@ -180,6 +201,7 @@ const agendamentosModule = {
       return consultasFiltradas;
     },
 
+
     consultas: (state) => state.consultas,
 
     consultasAtendimentoMedico: (state) =>
@@ -205,8 +227,21 @@ const agendamentosModule = {
 
     consultasCanceladas: (state) =>
       state.consultas.filter((consulta) => consulta.status === "Cancelada"),
+
+    consultasProfissional: (state) => state.consultasProfissional
   },
+
   actions: {
+
+
+    setIdConsultaState({ commit }, id) {
+      commit('setIdConsultaState', id)
+    },
+
+    setMensagemResposta({ commit }, mensagem) {
+      commit('setMensagemResposta', mensagem)
+    },
+
     setSearch({ commit }, search) {
       commit("setSearch", search);
     },
@@ -224,7 +259,6 @@ const agendamentosModule = {
     setConsultasProfissional({ commit, state }, consultas) {
       commit("setConsultasProfissional", consultas);
     },
-
     setIdConsulta({ commit }, id) {
       commit("setIdConsulta", id);
     },
@@ -237,18 +271,14 @@ const agendamentosModule = {
     setConsulta({ commit, dispatch }, valor) {
       commit("setConsulta", valor);
     },
-
     setDataConsulta({ commit }, valor) {
       commit("setDataConsulta", valor);
     },
-
     IsMessage({ commit }, valor) {
       commit("setIsMessage", valor);
     },
-
-    async agendarConsulta({ commit, state }) {
+    async agendarConsulta({ commit, state, dispatch }) {
       console.log("agendar consulta");
-      console.log(state.consulta.data);
       const consultaId = state.consulta ? Number(state.consulta.id) : null;
       console.log(state.consulta);
       const resposta = tratarAgendamento(state.consulta);
@@ -257,13 +287,13 @@ const agendamentosModule = {
 
       switch (resposta) {
         case "Escolha um profissional":
-          commit("setAvisoDataObg", true);
-          break;
         case "Data indefinida":
+          commit("setIsMsgSAgendamento", false);
           commit("setAvisoDataObg", true);
           break;
         case "Consulta válida":
-          commit("setIsMsgSAgendamento", true);
+
+
           try {
             let dataNula = new Date(0, 0, 0);
             const consulta = {
@@ -273,29 +303,48 @@ const agendamentosModule = {
                 ? state.consulta.data.concat(":00.000Z")
                 : formatDate(dataNula),
             };
-            const resultadoRequest = await http.put(
-              `consulta/${consultaId}`,
-              consulta
-            );
 
-            console.log(resultadoRequest.status);
+            console.log("dados da consulta 317: ", Number(consultaId), consulta);
+
+            // Enviar a requisição para agendar a consulta
+            const resultadoRequest = await http.post(
+              `consulta/agendar`,
+              {
+                id: Number(consultaId),
+                dataConsulta: consulta.data,
+                profissionalId: consulta.profissionalId,
+                // status: consulta.status,
+              }
+            );
+            if (resultadoRequest.status === 200) {
+              commit("setShowAlertErrorAgendarConsulta", false);
+              dispatch("listarConsultas");
+              commit("setShowEditarConsulta", false);
+              commit("setIsMsgSAgendamento", true);
+              commit("setAvisoDataObg", false);
+            }
           } catch (error) {
-            console.log(error);
+            commit("setAvisoDataObg", false);
+            commit("setIsMsgSAgendamento", false);
+            console.log(error.response.data.error)
+            dispatch('setMensagemResposta', error.response.data.error)
+            commit("setShowAlertErrorAgendarConsulta", true);
+
+
           }
+
+
 
           break;
       }
-      console.log("Resposta 1 : ");
-      console.log(resposta);
+      console.log("Resposta 1:", resposta);
     },
-
     async getConsultaProfissional({ commit, state }, idProfissional) {
       const consultas = await http.get(`consultas-profissional/${idProfissional}`);
       commit("setConsultasProfissional", consultas.data);
       console.log(state.consultasProfissional)
 
       console.log(consultas.data);
-
     },
     async getConsulta({ commit, state }, idConsulta) {
       const dadosConsulta = await http.get(`consulta/${idConsulta}`);
@@ -309,7 +358,6 @@ const agendamentosModule = {
         state.consulta.data_solicitacao
       );
     },
-
     async atualizarConsulta({ state, dispatch }) {
       state.consulta.status = "Cancelada";
       console.log(state.consulta.data);

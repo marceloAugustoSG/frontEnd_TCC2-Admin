@@ -31,8 +31,8 @@
 
                     <v-card-actions>
                         <v-spacer />
-                        <v-btn @click="gerarPDF" variant="tonal" text="Gerar PDF" />
-                        <v-btn @click="fechar" variant="tonal" text="Fechar" />
+                        <v-btn @click="gerarPDF" variant="flat" prepend-icon="mdi-file" color="#007BFF" text="Gerar PDF" />
+                        <v-btn @click="fechar" variant="flat" color="#FF6B6B" text="Fechar" />
                     </v-card-actions>
                 </v-card>
 

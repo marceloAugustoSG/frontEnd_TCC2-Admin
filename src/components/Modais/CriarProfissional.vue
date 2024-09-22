@@ -1,110 +1,49 @@
-<!-- <template>
-    <v-sheet class="pa-5">
-        <v-card-title>
-            <span class="text-h5">Novo</span>
-        </v-card-title>
-        <v-container>
-            <form @submit.prevent="submit">
-                <v-row>
-                    <v-col cols="12" lg="6">
-                        <v-text-field v-model="novoProfissional.nome" label="Nome" variant="outlined" required />
-                    </v-col>
-                    <v-col cols="12" lg="6">
-                        <v-select v-model="novoProfissional.especialidade" :items="['Medico', 'Psicólogo']"
-                            label="Especialidade" variant="outlined" required />
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="12" lg="6">
-                        <v-text-field v-model="novoProfissional.email" label="E-mail" variant="outlined" required />
-                    </v-col>
-                    <v-col cols="12" lg="6">
-                        <v-text-field v-model="novoProfissional.telefone" label="Telefone" variant="outlined"
-                            required />
-                    </v-col>
-                </v-row>
-            </form>
-        </v-container>
-        <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn @click="submit" type="submit" variant="tonal" color="blue-darken-2" text="Salvar" />
-            <v-btn @click="close" color="blue-darken-1" variant="tonal" text="Fechar" />
-        </v-card-actions>
-    </v-sheet>
-</template>
-
-<script setup>
-
-import { useStore } from 'vuex';
-import { ref } from 'vue';
-
-const store = useStore()
-
-const novoProfissional = ref({
-    nome: '',
-    email: '',
-    especialidade: '',
-    telefone: ''
-
-})
-
-
-const rules(value) = [
-    value => {
-        if (value) return true
-
-        return 'You must enter a first name.'
-    },
-],
-
-    async function submit() {
-
-        store.dispatch('criarProfissional', novoProfissional.value)
-        console.log(novoProfissional.value)
-    }
-
-function close() {
-    store.dispatch('setShowMNewProf', false)
-
-}
-
-</script>
-
-<style></style> -->
-
 <template>
 
     <v-sheet class="pa-5">
         <v-card-title>
-            <span class="text-h5">Novo</span>
+            <span class="text-h5">Novo Profissional</span>
         </v-card-title>
 
         <v-container>
             <v-form ref="form">
                 <v-row>
-                    <v-col cols="12" lg="6">
-                        <v-text-field v-model="novoProfissional.nome" variant="outlined" :rules="nomeRules"
-                            label="Nome" />
-                    </v-col>
-                    <v-col cols="12" lg="6">
-                        <v-select v-model="novoProfissional.especialidade" :items="especialidades" variant="outlined"
-                            :rules="especialidadeRules" label="Especialidade" />
+                    <v-col cols="12" lg="12">
+                        <v-text-field v-model="novoProfissional.ProfissionalSaude.nome" variant="outlined"
+                            :rules="nomeRules" label="Nome" />
                     </v-col>
                 </v-row>
                 <v-row>
                     <v-col cols="12" lg="6">
-                        <v-text-field v-model="novoProfissional.email" variant="outlined" :rules="emailRules"
-                            label="email" />
+                        <v-select v-model="novoProfissional.ProfissionalSaude.especialidade" :items="especialidades"
+                            variant="outlined" :rules="especialidadeRules" label="Especialidade" />
                     </v-col>
+
                     <v-col cols="12" lg="6">
-                        <v-text-field v-model="novoProfissional.telefone" variant="outlined" :rules="telefoneRules"
-                            label="Telefone" />
+                        <v-text-field v-model="novoProfissional.ProfissionalSaude.telefone" variant="outlined"
+                            :rules="telefoneRules" label="Telefone" />
+                    </v-col>
+
+                </v-row>
+
+                <v-row>
+
+                    <v-col cols="12" lg="12">
+                        <v-text-field v-model="novoProfissional.email" variant="outlined" :rules="emailRules"
+                            label="E-mail" />
+                    </v-col>
+                    <v-col cols="12" lg="12">
+                        <v-text-field variant="outlined" v-model="novoProfissional.password"
+                            :append-inner-icon="showpassword ? 'mdi-eye' : 'mdi-eye-off'"
+                            :type="showpassword ? 'text' : 'password'"
+                            @click:append-inner="showpassword = !showpassword" label="Senha" :rules="passwordRules"
+                            required />
                     </v-col>
                 </v-row>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn @click="submit" variant="tonal" color="blue-darken-2" text="Salvar" />
-                    <v-btn @click="close" color="blue-darken-1" variant="tonal" text="Fechar" />
+                    <v-btn @click="submit" variant="flat" color="#28A745" text="Salvar" />
+                    <v-btn @click="close" color="#FF6B6B" variant="flat" text="Fechar" />
                 </v-card-actions>
             </v-form>
         </v-container>
@@ -113,7 +52,7 @@ function close() {
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useStore } from 'vuex';
 
 const store = useStore()
@@ -121,11 +60,44 @@ const store = useStore()
 const especialidades = ['Atendimento Médico', 'Atendimento Psicológico']
 
 const novoProfissional = ref({
-    nome: '',
-    especialidade: '',
     email: '',
-    telefone: ''
+    password: '',
+    regra: '',
+    ProfissionalSaude: {
+        nome: '',
+        especialidade: '',
+        email: '',
+        telefone: '',
+    }
+
 })
+
+
+// Watch para observar mudanças no campo 'email' no nível superior
+watch(
+    () => novoProfissional.value.email,
+    (novoEmail) => {
+        novoProfissional.value.ProfissionalSaude.email = novoEmail;
+    },
+    { immediate: true } // Adiciona immediate para definir o valor inicial
+);
+
+// Watch para observar mudanças no campo 'especialidade' dentro de ProfissionalSaude
+watch(
+    () => novoProfissional.value.ProfissionalSaude.especialidade,
+    (novaEspecialidade) => {
+        if (novaEspecialidade === 'Atendimento Psicológico') {
+            novoProfissional.value.regra = 'psicologo';
+        } else if (novaEspecialidade === 'Atendimento Médico') {
+            novoProfissional.value.regra = 'medico';
+        } else {
+            novoProfissional.value.regra = ''; // Valor padrão se não atender nenhuma condição
+        }
+    }
+);
+
+
+
 const nomeRules = [
     value => {
         if (value) return true
@@ -140,6 +112,11 @@ const especialidadeRules = [
         return 'Campo especialidade não pode ser vazio'
     },
 ]
+
+const passwordRules = ref([
+    v => !!v || 'Senha é obrigatoria',
+])
+
 const emailRules = [
     value => {
         if (value) return true
@@ -162,6 +139,10 @@ const telefoneRules = [
 
 
 ]
+
+
+
+let showpassword = ref(false)
 
 const form = ref(null);
 async function submit() {

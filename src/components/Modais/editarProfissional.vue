@@ -145,8 +145,8 @@ function close() {
                 </v-row>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn @click="submit" variant="tonal" color="blue-darken-2" text="Salvar" />
-                    <v-btn @click="close" color="blue-darken-1" variant="tonal" text="Fechar" />
+                    <v-btn @click="submit" variant="flat" color="#28A745" text="Salvar" />
+                    <v-btn @click="close" color="#FF6B6B" variant="flat" text="Fechar" />
                 </v-card-actions>
             </v-form>
         </v-container>

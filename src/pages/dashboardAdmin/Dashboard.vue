@@ -18,8 +18,7 @@
                 <v-btn>
                   <v-icon size="25" v-bind="props" color="colorIcons" icon="mdi-account " />
                 </v-btn>
-                <!-- <v-img cover src="https://icones.pro/wp-content/uploads/2022/07/icones-d-administration.png">
-                </v-img> -->
+              
               </v-avatar>
 
             </template>

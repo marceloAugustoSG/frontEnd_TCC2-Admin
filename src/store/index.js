@@ -4,6 +4,7 @@ import agendamentosModule from "./modules/agendamentos";
 import profissionaisModule from "./modules/profissionais";
 import contradoresTelaModule from "./modules/controladoresTela";
 import relatoriosModule from "./modules/relatorios";
+import compromissosModule from "./modules/compromissos";
 
 export default createStore({
   modules: {
@@ -12,5 +13,6 @@ export default createStore({
     profissionais: profissionaisModule,
     controladoresTela: contradoresTelaModule,
     relatorio: relatoriosModule,
+    compromissos: compromissosModule
   },
 });

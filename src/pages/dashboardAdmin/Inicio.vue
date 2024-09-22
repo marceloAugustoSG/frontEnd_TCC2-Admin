@@ -3,7 +3,7 @@
         <div style="margin: 0 30px">
             <v-row>
                 <v-col cols="6">
-                    <v-card class="mx-auto" color="card" elevation="3">
+                    <v-card class="mx-auto" color="card" elevation="1" border>
                         <h6 class="ma-5" style="text-align: center;">Agendamentos para HOJE</h6>
                         <v-carousel cycle progress="primary" :continuous="false" height="200" max-width="400"
                             show-arrows="hover" hide-delimiters>
@@ -29,7 +29,7 @@
                     </v-card>
                 </v-col>
                 <v-col>
-                    <v-card class="mx-auto" color="card" elevation="3">
+                    <v-card class="mx-auto" color="card" elevation="1" border>
                         <h6 class="ma-5" style="text-align: center;">Agendamentos para AMANHÃ</h6>
                         <v-carousel cycle progress="primary" :continuous="false" height="200" max-width="400"
                             show-arrows="hover" hide-delimiters>

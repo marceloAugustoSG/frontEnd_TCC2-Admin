@@ -25,7 +25,23 @@ const loginLogoutModule = {
   },
   getters: {},
   actions: {
-    async logar({ commit,state }, usuario) {
+
+
+    async obterIdProfissionalSaudePorIdUsuario({ commit, state }, usuarioId) {
+      try {
+        const resposta = await http.get(`profissional-saude/${Number(usuarioId)}`);
+
+        console.log(resposta.data)
+
+        localStorage.setItem('profissionalId', resposta.data.id)
+      } catch (error) {
+
+        console.log(error)
+      }
+
+    },
+
+    async logar({ commit, state, dispatch }, usuario) {
       try {
         const resposta = await http.post("login", usuario);
         const data = resposta.data;
@@ -37,13 +53,14 @@ const loginLogoutModule = {
         console.log(tokenDecodificado);
         console.log(data.token);
 
-        if (tokenDecodificado.regra === "psicologo") {
-          commit("setPsi", false);
+        dispatch('obterIdProfissionalSaudePorIdUsuario', tokenDecodificado.id);
+        if (tokenDecodificado.regra === "psicologo" ||tokenDecodificado.regra === "medico") {
+          commit("setPsi", true);
 
           localStorage.setItem("psi", false);
           console.log(state.isPsi);
           localStorage.setItem("usuarioId", tokenDecodificado.id);
-          localStorage.setItem("token", data);
+          localStorage.setItem("token", data.token);
           router.push({ name: "dashboardPsi" });
           commit("setMessage", "");
         }

@@ -13,8 +13,8 @@
 
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click="confirmar" color="blue-darken-1" variant="tonal" text="Sim" />
-            <v-btn @click="fechar" type="submit" variant="tonal" color="blue-darken-2" text="Não" />
+            <v-btn @click="confirmar" color="#28A745" variant="tonal" text="Sim" />
+            <v-btn @click="fechar" type="submit" variant="tonal" color="#FF6B6B" text="Não" />
         </v-card-actions>
     </v-sheet>
 

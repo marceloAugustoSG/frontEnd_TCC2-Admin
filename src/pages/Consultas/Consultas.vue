@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-sheet dark rounded>
+        <v-sheet rounded>
             <v-row class="pa-5">
                 <v-col cols="12" lg="3">
                     <v-select label="Pesquisar por..." variant="outlined" v-model="store.state.agendamento.ordenar"
@@ -20,33 +20,82 @@
                             <v-btn icon="mdi-chevron-up" color="blue" style="margin-right: 10px;" @click="ordenarAsc" />
                             <v-btn icon="mdi-chevron-down" color="blue" @click="ordenarDesc" />
                         </div>
-                        <v-btn icon="mdi-refresh" color="card" @click="refresh" />
+                        <v-btn icon="mdi-refresh" color="#28A745" @click="refresh" />
                     </div>
                 </v-col>
             </v-row>
         </v-sheet>
 
+
+
+
+        <v-dialog v-model="store.state.controladoresTela.dialogCancelar" persistent>
+            <v-card class=" mx-auto" style="width: 300px;">
+                <v-toolbar title="Aviso" color="primary" />
+                <v-card-text style="text-align: justify;">Tem certeza que deseja cancelar esse
+                    agendamento?</v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn text="Sim" variant="tonal" @click="cancelarAgendamento" />
+                    <v-btn text="Não" variant="tonal" @click="fecharDialogExcluir" />
+                </v-card-actions>
+
+            </v-card>
+        </v-dialog>
+
+
+        <v-dialog v-model="store.state.controladoresTela.showMsgSucessoAgendamento">
+            <mensagemSucesso :mensagem="mensagem" />
+        </v-dialog>
+
+        <v-dialog v-model="store.state.controladoresTela.isMessageSucesso" persistent>
+            <mensagemSucesso />
+        </v-dialog>
+        <v-dialog v-model="store.state.controladoresTela.isMessageExcluir" persistent>
+            <mensagemSucessoExcluir />
+        </v-dialog>
+
+        <v-dialog v-model="store.state.controladoresTela.showAvisoDataObg" persistent>
+            <avisoDataObrigatoria />
+        </v-dialog>
+        <v-dialog v-model="store.state.controladoresTela.showDialogExcluirConsulta" persistent>
+            <avisoExcluirConsulta />
+        </v-dialog>
+
+
+
+        <v-dialog v-model="store.state.controladoresTela.showAlertErrorAgendarConsulta" max-width="600px">
+            <v-alert type="warning" density="compact" title="Aviso">Horário já ocupado para esse
+                profissional</v-alert>
+        </v-dialog>
+
         <v-container class="pr-5" v-if="store.getters.consultasFiltradas.length === 0">
             <v-alert type="warning">Nenhum resultado encontrado</v-alert>
         </v-container>
 
-        <v-container class="pr-5" v-else-if="store.getters.consultas.length === 0">
-            <v-alert type="warning">Nenhuma consulta registrada no sistema</v-alert>
-        </v-container>
-
         <v-container class="pr-5" v-if="store.state.agendamento.consultas.length === 0">
-            <v-alert type="warning">Nenhuma consulta registrada no sistema</v-alert>
+            <v-alert type="warning">Nenhum agendamento solicitado</v-alert>
+        </v-container>
+        <v-container class="pr-5" v-if="store.state.profissionais.profissionais.length === 0">
+            <v-alert type="warning">Cadastre pelo menos 1 profissional no sistema</v-alert>
         </v-container>
         <v-container fluid>
+
+            <!-- modal aqui, de editar consulta -->
+            <v-dialog v-model="store.state.controladoresTela.showEditarConsulta" persistent>
+                <editar-consulta :consulta="store.state.agendamento.consulta" />
+            </v-dialog>
+
             <v-row>
                 <v-col cols="12" lg="4" v-for="consulta in store.getters.consultasFiltradas" :key="consulta.id">
 
-                    <!-- {{consulta}} -->
-                    <v-sheet elevation="3" border rounded>
+                    <v-sheet elevation="1" border rounded>
                         <v-toolbar :title="consulta.servico">
-                            <div style="display: flex;" class="mr-2">
-                                <editar-consulta :consulta="consulta" />
-                            </div>
+                            <v-btn v-show="consulta.status === 'Cancelada'" icon="mdi-alpha-x-circle"
+                                @click="abrirDialogExcluir(consulta)" />
+                            <v-btn icon="mdi-eye" @click="abrirModalEditarConsulta(consulta)" />
+                            <v-btn v-show="consulta.status === 'Confirmada'" icon="mdi-cancel" color="red"
+                                @click="abrirDialogCancelar(consulta)" />
                         </v-toolbar>
                         <v-divider />
                         <div class="ma-5">
@@ -73,6 +122,12 @@ import { useStore } from "vuex";
 import EditarConsulta from '@/components/Modais/EditarConsulta.vue';
 import { formatarDataHora } from "@/services/date";
 import { formatDate } from "@/services/date";
+
+
+import mensagemSucesso from '@/components/Mensagens/mensagemSucesso.vue'
+import mensagemSucessoExcluir from '@/components/Mensagens/mensagemSucessoExcluir.vue';
+import avisoExcluirConsulta from '@/components/Mensagens/avisoExcluirConsulta.vue';
+import avisoDataObrigatoria from '@/components/Mensagens/avisoDataObrigatoria.vue';
 const store = useStore()
 
 
@@ -89,6 +144,25 @@ function ordenarDesc() {
     store.dispatch('setSearch', 1)
     console.log(store.state.agendamento.ord)
     console.log(store.getters.consultasFiltradas)
+}
+
+
+async function abrirModalEditarConsulta(consulta) {
+
+    await store.dispatch('setIdConsultaState', consulta.id)
+    await store.dispatch('getConsulta', store.state.agendamento.idConsultaState)
+
+    store.dispatch('setConsulta', consulta);
+    store.dispatch('setShowEditarConsulta', true)
+
+}
+
+
+async function abrirDialogExcluir(consulta) {
+    await store.dispatch('setIdConsultaState', consulta.id)
+    await store.dispatch('getConsulta', store.state.agendamento.idConsultaState)
+    console.log(store.state.agendamento.idConsultaState)
+    store.dispatch('setShowDialogExcluirConsulta', true)
 }
 
 
@@ -110,6 +184,34 @@ function getChipColor(status) {
     }
 }
 
+async function abrirDialogCancelar(consulta) {
+
+    await store.dispatch('setIdConsultaState', consulta.id)
+    console.log(store.state.agendamento.idConsultaState)
+
+    await store.dispatch('getConsulta', store.state.agendamento.idConsultaState)
+    // console.log(store.state.agendamento.consulta)
+    // console.log(store.state.agendamento.idConsulta)
+    // // store.dispatch('setIdConsulta', props.consulta.id)
+    store.dispatch('setDialogCancelar', true)
+}
+
+
+async function cancelarAgendamento() {
+
+    // await store.dispatch('setIdConsultaState', consulta.id)
+    // console.log(store.state.agendamento.idConsultaState)
+
+    store.dispatch('atualizarConsulta')
+    store.dispatch('getConsulta', store.state.agendamento.consulta.id)
+    // console.log(store.state.agendamento.consulta.id)
+    // console.log(store.state.agendamento.consulta)
+    store.dispatch('setDialogCancelar', false)
+}
+
+function fecharDialogExcluir() {
+    store.dispatch('setDialogCancelar', false)
+}
 
 onBeforeMount(async () => {
     try {

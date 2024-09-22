@@ -13,7 +13,7 @@ const ligth = {
   colors: {
     blueUfes: '#F0F2F5',
     colorIcons: "0F406F",
-    background: "#fff",
+    background: "#F8F9FA",
     // card: "#0F406F",
     card: "#EEE",
     surface: "#EEE",

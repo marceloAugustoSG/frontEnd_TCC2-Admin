@@ -1,8 +1,8 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col cols="12">
-        <v-card>
+    <v-row >
+      <v-col cols="12" >
+        <v-card border>
           <v-card-title>Gerar Relatório</v-card-title>
           <v-card-text>
             <form>
@@ -32,8 +32,7 @@
               {{ filtro }}</span><v-spacer /><span>Status:
               {{ status }}</span>
             <v-spacer />
-            <v-btn @click="gerarRelatorio" prepend-icon="mdi-file" variant="tonal">Gerar
-              Relatório</v-btn>
+            <v-btn @click="gerarRelatorio" prepend-icon="mdi-filter-multiple" color="#007BFF" variant="flat">Filtrar</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>

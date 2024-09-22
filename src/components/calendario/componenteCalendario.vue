@@ -1,10 +1,11 @@
 <template>
 
 
-    <v-sheet class="pa-5 ma-5" rounded>
+    <v-sheet class="pa-5 ma-5" rounded border>
 
         <v-btn text="Voltar" @click="voltarNvegacao" color="btn" variant="outlined" style="margin: 20px;" />
-        <v-card class="pa-5" elevation="2">
+   
+        <v-card class="pa-5" elevation="1" border>
             <div class="calendar-header">
                 <v-btn text="◀" @click="anterior" color="btn" variant="flat" />
                 <span>{{ meses[mesAtual] }} - {{ anoAtual }}</span>
@@ -12,29 +13,29 @@
             </div>
 
         </v-card>
-        <v-card class="pa-5 mt-5" elevation="1">
+        <v-card class="pa-5 mt-5" elevation="1" border>
             <div class="calendar-body">
 
                 <div class="calendar-day" v-for="dia in daysInMonth" :key="dia" @click="abrirMDetalhesConsulta(dia)">
                     {{ dia }}
                     <div v-if="temConsulta(dia)" class="consulta-indicador"></div>
+                    
                 </div>
 
                 <v-dialog v-model="dialogTeste" persistent max-width="1000px">
                     <v-card>
-                        <v-card-title class="headline">Detalhes da Consulta</v-card-title>
+                        <v-card-title class="headline">Detalhes da(s) Consulta(s)</v-card-title>
                         <v-card-text>
                             <v-carousel v-if="consultasParaHoje.length > 1" show-arrows>
                                 <v-carousel-item v-for="(consulta, id) in consultasParaHoje" :key="id">
                                     <div class="d-flex fill-height justify-center align-center ">
-                                        <v-card width="50%" height="50%" class="d-flex justify-center align-center ">
+                                        <v-card width="50%" height="50%" class="d-flex justify-center align-center "
+                                            border>
                                             <v-card-text>
-                                                <p><strong>Data:</strong> {{ consulta.data }}</p>
+                                                <p><strong>Data :</strong> {{ formatDate(consulta.data) }}</p>
                                                 <p><strong>Status:</strong> {{ consulta.status }}</p>
                                                 <p><strong>Paciente:</strong> {{ consulta.Paciente.nome }}</p>
-                                                <p><strong>Profissional de Saúde:</strong> {{ consulta.Profissional.nome
-                                                    }}
-                                                </p>
+
                                             </v-card-text>
                                         </v-card>
 
@@ -43,11 +44,10 @@
                             </v-carousel>
 
                             <div v-else>
-                                <p><strong>Data:</strong> {{ consultasParaHoje[0].data }}</p>
+                                <p><strong>Data:</strong> {{ formatDate(consultasParaHoje[0].data) }}</p>
                                 <p><strong>Status:</strong> {{ consultasParaHoje[0].status }}</p>
-                                <p><strong>Paciente:</strong> {{ consultasParaHoje[0].paciente }}</p>
-                                <p><strong>Profissional de Saúde:</strong> {{ consultasParaHoje[0].profissionalSaude }}
-                                </p>
+                                <p><strong>Paciente:</strong> {{ consultasParaHoje[0].Paciente.nome }}</p>
+
                             </div>
                         </v-card-text>
                         <v-card-actions>
@@ -61,6 +61,7 @@
             </div>
 
         </v-card>
+      
     </v-sheet>
 </template>
 
@@ -68,6 +69,7 @@
 import { useStore } from "vuex";
 import { ref, computed, onBeforeMount } from "vue";
 import router from "@/router";
+import { formatDate } from "@/services/date";
 
 
 const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -77,48 +79,10 @@ let dialogTeste = ref(false);
 const store = useStore();
 
 const consultasParaHoje = ref([]);
-
-
-const consultasMock = ref([
-
-    {
-        data: '12/08/2024',
-        status: 'Solicitado',
-        paciente: 'Marcelo Augusto Soares Gomes',
-        profissionalSaude: 'Dr Ricardo Moreira'
-    },
-    {
-        data: '12/08/2024',
-        status: 'Confirmado',
-        paciente: 'Marcelo Augusto Soares Gomes',
-        profissionalSaude: 'Dr Ricardo Moreira'
-    },
-    {
-        data: '13/08/2024',
-        status: 'Solicitado',
-        paciente: 'Marcelo Augusto Soares Gomes',
-        profissionalSaude: 'Dr Ricardo Moreira'
-    },
-    {
-        data: '13/07/2024',
-        status: 'Solicitado',
-        paciente: 'Marcelo Augusto Soares Gomes',
-        profissionalSaude: 'Dr Ricardo Moreira'
-    }
-])
-
 const consultasProfissional = ref([])
-
-
-
-
 const fechar = () => {
     dialogTeste.value = !dialogTeste.value
 }
-
-
-
-
 
 const abrirMDetalhesConsulta = (dia) => {
     // Formata o dia selecionado para o formato 'dd/MM/yyyy'
@@ -234,5 +198,18 @@ const temConsulta = (dia) => {
     height: 8px;
     background-color: orange;
     border-radius: 50%;
+}
+
+.legenda {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.consulta {
+    background-color: orange;
+}
+.compromisso {
+    background-color: green;
 }
 </style>

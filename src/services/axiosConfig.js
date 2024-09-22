@@ -5,8 +5,8 @@ import axios from "axios";
 export const http = axios.create({
   // baseURL: "http:// 192.168.8.176:3005/",
   // baseURL: "https://apitcc.vercel.app/",
-  // baseURL: "http://10.3.152.107:3005/",
-  baseURL: "http://localhost:3005/"
+  baseURL: "http://10.3.152.107:3005/",
+  // baseURL: "http://localhost:3005/"
 });
 
 // Adicione um interceptor para atualizar dinamicamente o cabeçalho de autorização

@@ -5,14 +5,24 @@ const contradoresTelaModule = {
     showSucessoEditProf: false,
     showMDeletarProf: false,
     showMNewProf: false,
+    showMNewCompromisso: false,
     msgSaveProf: false,
     showRelatorio: false,
     dialogCancelar: false,
     isMessageExcluir: false,
     showAvisoDataObg: false,
     showDialogExcluirConsulta: false,
+    showDialogExcluirCompromisso: false,
+    showAlertErrorAgendarConsulta: false,
+    showEditarConsulta: false
   },
   mutations: {
+    setShowEditarConsulta(state, payload) {
+      state.showEditarConsulta = payload
+    },
+    setShowAlertErrorAgendarConsulta(state, payload) {
+      state.showAlertErrorAgendarConsulta = payload
+    },
     setShowDialogExcluirConsulta(state, payload) {
       state.showDialogExcluirConsulta = payload;
     },
@@ -50,6 +60,12 @@ const contradoresTelaModule = {
     setShowMNewProf(state, payload) {
       state.showMNewProf = payload;
     },
+    setShowMNewCompromisso(state, payload) {
+      state.showMNewCompromisso = payload;
+    },
+    setShowDialogExcluirCompromisso(state, payload) {
+      state.showDialogExcluirCompromisso = payload;
+    },
 
     setMsgSaveProf(state, payload) {
       state.msgSaveProf = payload;
@@ -57,6 +73,17 @@ const contradoresTelaModule = {
   },
   getters: {},
   actions: {
+    setShowEditarConsulta({ commit }, value) {
+      commit('setShowEditarConsulta', value)
+    },
+
+    setShowAlertErrorAgendarConsulta({ commit }, value) {
+      commit('setShowAlertErrorAgendarConsulta', value)
+    },
+
+    setShowDialogExcluirCompromisso({ commit }, value) {
+      commit('setShowDialogExcluirCompromisso', value)
+    },
     setShowDialogExcluirConsulta({ commit }, value) {
       commit("setShowDialogExcluirConsulta", value);
     },
@@ -90,6 +117,9 @@ const contradoresTelaModule = {
 
     setShowMNewProf({ commit }, valor) {
       commit("setShowMNewProf", valor);
+    },
+    setShowMNewCompromisso({ commit }, valor) {
+      commit("setShowMNewCompromisso", valor);
     },
 
     setShowMEditProf({ commit }, valor) {
